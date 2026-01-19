@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
-import { Nunito } from "next/font/google";
+import { Nunito, Titan_One } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import Wishlist from "@/components/Wishlist";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 import "./globals.css";
 
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
   weight: ["400", "600", "700", "800"],
+});
+
+const titanOne = Titan_One({
+  variable: "--font-titan",
+  weight: "400",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
@@ -28,8 +35,11 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="pt-BR">
-        <body className={`${nunito.variable} font-sans antialiased bg-gray-100`}>
+      <html lang="pt-BR" suppressHydrationWarning>
+        <head>
+          <GoogleAnalytics />
+        </head>
+        <body className={`${nunito.variable} ${titanOne.variable} font-sans antialiased bg-white`}>
           {children}
           <Wishlist />
         </body>
@@ -37,4 +47,3 @@ export default function RootLayout({
     </ClerkProvider>
   );
 }
-

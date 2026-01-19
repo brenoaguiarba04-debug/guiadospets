@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --pet-purple: #7c3aed;
-  --pet-purple-light: #a78bfa;
-  --pet-purple-bg: #f3e8ff;
-  --pet-green: #00a374;
-  --pet-green-dark: #047857;
-  --pet-text: #1f2937;
+  --pet-purple: #522166;
+  --pet-purple-hover: #3e194d;
+  --pet-yellow: #ffd000;
+  --pet-yellow-hover: #e6bc00;
+  --pet-text: #333333;
+  --pet-bg: #f5f5f5;
+  --pet-white: #ffffff;
 }
 
 body {

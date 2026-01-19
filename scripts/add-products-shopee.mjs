@@ -156,6 +156,7 @@ async function main() {
         { termo: 'areia gato granulado', categoria: 'Higiene', marca: 'Vários', limite: 4 },
         { termo: 'areia gato silica', categoria: 'Higiene', marca: 'Vários', limite: 3 },
         { termo: 'areia sanitaria gato', categoria: 'Higiene', marca: 'Vários', limite: 3 },
+        { termo: 'areia viva verde', categoria: 'Higiene', marca: 'Viva Verde', limite: 5 },
     ]
 
     let totalAdicionados = 0

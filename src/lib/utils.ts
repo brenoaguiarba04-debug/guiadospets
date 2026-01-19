@@ -46,45 +46,186 @@ export function extrairPesoParaBotao(nome: string): string {
 
 /**
  * Define o grupo de agrupamento para produtos similares.
+ * VERSÃO MELHORADA: Inclui sabor, espécie, porte e fase
  */
 export function definirGrupo(nome: string): string {
     if (!nome) return "Produto Sem Nome"
 
     const n = nome.toLowerCase()
 
-    // Antipulgas NexGard
-    if (n.includes('nexgard')) {
-        const tipo = n.includes('spectra') ? "Spectra" : "Tradicional"
-        const qtd = /(?:3\s*uni|3\s*tab|3\s*comp|cx\s*3|pack\s*3)/.test(n) ? "Pack com 3" : "1 Tablete"
-        return `NexGard ${tipo} - ${qtd}`
+    // =====================
+    // DETECTAR COMPONENTES
+    // =====================
+
+    // Espécie
+    let especie = ''
+    if (n.includes('gato') || n.includes('felino') || n.includes('cat ') || n.includes('feline')) {
+        especie = 'Gatos'
+    } else if (n.includes('cão') || n.includes('cães') || n.includes('cachorro') || n.includes('dog') || n.includes('canino')) {
+        especie = 'Cães'
     }
 
-    // Antipulgas Bravecto
+    // Fase
+    let fase = ''
+    if (n.includes('filhote') || n.includes('puppy') || n.includes('kitten') || n.includes('junior')) {
+        fase = 'Filhotes'
+    } else if (n.includes('senior') || n.includes('idoso') || n.includes('7+') || n.includes('mature')) {
+        fase = 'Sênior'
+    } else if (n.includes('castrado') || n.includes('sterili')) {
+        fase = 'Castrados'
+    } else if (n.includes('light') || n.includes('obeso') || n.includes('peso')) {
+        fase = 'Light'
+    } else if (n.includes('adult')) {
+        fase = 'Adultos'
+    }
+
+    // Porte (cães)
+    let porte = ''
+    if (n.includes('pequeno') || n.includes('small') || n.includes('mini') || n.includes('toy')) {
+        porte = 'Peq.'
+    } else if (n.includes('médio') || n.includes('medio') || n.includes('medium')) {
+        porte = 'Méd.'
+    } else if (n.includes('gigante') || n.includes('giant') || n.includes('maxi')) {
+        porte = 'Gig.'
+    } else if (n.includes('grande') || n.includes('large')) {
+        porte = 'Gde.'
+    }
+
+    // Sabor
+    let sabor = ''
+    const sabores = [
+        { termo: 'frango', label: 'Frango' },
+        { termo: 'carne', label: 'Carne' },
+        { termo: 'salmão', label: 'Salmão' },
+        { termo: 'salmon', label: 'Salmão' },
+        { termo: 'cordeiro', label: 'Cordeiro' },
+        { termo: 'peru', label: 'Peru' },
+        { termo: 'peixe', label: 'Peixe' },
+        { termo: 'vegetal', label: 'Vegetais' },
+        { termo: 'arroz', label: 'Arroz' }
+    ]
+    for (const s of sabores) {
+        if (n.includes(s.termo)) {
+            sabor = s.label
+            break
+        }
+    }
+
+    // =====================
+    // ANTIPULGAS
+    // =====================
+
+    if (n.includes('nexgard')) {
+        const tipo = n.includes('spectra') ? "Spectra" : ""
+        const qtd = /(?:3\s*uni|3\s*tab|3\s*comp|cx\s*3|pack\s*3)/.test(n) ? "3 Comp." : "1 Comp."
+        return `NexGard ${tipo} ${qtd}`.trim()
+    }
+
     if (n.includes('bravecto')) {
         const tipo = ['transdermal', 'pipeta', 'topico'].some(t => n.includes(t))
-            ? "Transdermal (Pipeta)"
+            ? "Transdermal"
             : "Mastigável"
-        return `Bravecto ${tipo}`
+        const animal = especie ? `para ${especie}` : ''
+        return `Bravecto ${tipo} ${animal}`.trim()
     }
 
-    // Antipulgas Simparic
     if (n.includes('simparic')) {
-        const qtd = /(?:3\s*uni|3\s*tab|3\s*comp)/.test(n) ? "Pack com 3" : "1 Comp."
-        return `Simparic - ${qtd}`
+        const qtd = /(?:3\s*uni|3\s*tab|3\s*comp)/.test(n) ? "3 Comp." : "1 Comp."
+        return `Simparic ${qtd}`
     }
 
-    // Rações Golden
-    if (n.includes('golden special')) return 'Ração Golden Special'
-    if (n.includes('golden formula')) return 'Ração Golden Fórmula'
-    if (n.includes('golden selecao') || n.includes('seleção natural')) return 'Ração Golden Sel. Natural'
+    // =====================
+    // RAÇÕES GOLDEN
+    // =====================
 
-    // Rações Premier
+    if (n.includes('golden')) {
+        let linha = ''
+        if (n.includes('special')) linha = 'Special'
+        else if (n.includes('formula') || n.includes('fórmula')) linha = 'Fórmula'
+        else if (n.includes('selecao') || n.includes('seleção')) linha = 'Seleção Natural'
+        else if (n.includes('mega')) linha = 'Mega'
+
+        const partes = ['Ração Golden', linha, sabor, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // RAÇÕES PREMIER
+    // =====================
+
     if (n.includes('premier')) {
-        if (n.includes('formula')) return 'Ração Premier Fórmula'
-        if (n.includes('especifica')) return 'Ração Premier Raças'
+        let linha = ''
+        if (n.includes('formula') || n.includes('fórmula')) linha = 'Fórmula'
+        else if (n.includes('especifica') || n.includes('raça')) linha = 'Raças Específicas'
+        else if (n.includes('nattu')) linha = 'Nattu'
+        else if (n.includes('cookie')) linha = 'Cookie'
+
+        const partes = ['Ração Premier', linha, sabor, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
     }
 
-    return nome
+    // =====================
+    // RAÇÕES ROYAL CANIN
+    // =====================
+
+    if (n.includes('royal canin')) {
+        // Tentar pegar a linha específica
+        let linha = ''
+        const linhas = ['urinary', 'satiety', 'hypoallergenic', 'gastro', 'renal', 'hepatic', 'indoor', 'outdoor', 'fit']
+        for (const l of linhas) {
+            if (n.includes(l)) {
+                linha = l.charAt(0).toUpperCase() + l.slice(1)
+                break
+            }
+        }
+
+        const partes = ['Ração Royal Canin', linha, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // AREIA
+    // =====================
+
+    if (n.includes('areia')) {
+        if (n.includes('viva verde')) return 'Areia Viva Verde para Gatos'
+        if (n.includes('pipicat')) return 'Areia Pipicat para Gatos'
+        return 'Areia Higiênica para Gatos'
+    }
+
+    // =====================
+    // PEDIGREE
+    // =====================
+
+    if (n.includes('pedigree')) {
+        const partes = ['Ração Pedigree', sabor, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // WHISKAS
+    // =====================
+
+    if (n.includes('whiskas')) {
+        const partes = ['Ração Whiskas', sabor, fase, 'para Gatos']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // FALLBACK: Retornar nome original limpo
+    // =====================
+
+    // Remove peso do nome para agrupar variações
+    let nomeGrupo = nome
+        .replace(/\d+[.,]?\d*\s*kg/gi, '') // Remove "15kg"
+        .replace(/\d+[.,]?\d*\s*g\b/gi, '') // Remove "500g"
+        .replace(/\s+/g, ' ') // Remove espaços extras
+        .trim()
+
+    // Se ficou muito curto, retorna original
+    if (nomeGrupo.length < 10) return nome
+
+    return nomeGrupo
 }
 
 /**
@@ -108,6 +249,7 @@ export function getStoreBadge(loja: string): { emoji: string; className: string 
         'Amazon': { emoji: '📦', className: 'bg-orange-100 text-orange-700' },
         'Manual': { emoji: '📦', className: 'bg-orange-100 text-orange-700' },
         'Shopee': { emoji: '🧡', className: 'bg-orange-100 text-orange-600' },
+        'Mercado Livre': { emoji: '🛒', className: 'bg-yellow-100 text-yellow-700' },
     }
 
     return stores[loja] || { emoji: '🏪', className: 'bg-gray-100 text-gray-700' }

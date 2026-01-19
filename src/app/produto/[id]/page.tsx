@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { getStoreBadge } from '@/lib/utils'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
+import ProductPageClient from '@/components/ProductPageClient'
 
 // Força renderização dinâmica
 export const dynamic = 'force-dynamic'
@@ -125,10 +126,27 @@ export default async function ProdutoPage({ params }: PageProps) {
 
     const { produto, precos } = data
 
+    // Deduplicar ofertas por loja (mantém a de menor preço)
+    const uniqueOffers = Object.values(
+        precos.reduce((acc, current) => {
+            // Se já existe oferta dessa loja
+            if (acc[current.loja]) {
+                // Mantém a que tiver menor preço
+                if (current.preco < acc[current.loja].preco) {
+                    acc[current.loja] = current
+                }
+            } else {
+                // Se não existe, adiciona
+                acc[current.loja] = current
+            }
+            return acc
+        }, {} as Record<string, typeof precos[0]>)
+    ).sort((a, b) => a.preco - b.preco)
+
     return (
         <div className="min-h-screen flex flex-col bg-gray-100">
             {/* Schema.org para SEO */}
-            <ProductSchema produto={produto} precos={precos} />
+            <ProductSchema produto={produto} precos={uniqueOffers} />
 
             <Header />
 
@@ -166,82 +184,108 @@ export default async function ProdutoPage({ params }: PageProps) {
                     </div>
 
                     {/* Offers Column */}
-                    <div className="lg:w-3/5 p-6 bg-gray-50">
-                        <div className="flex items-center gap-2 text-lg font-extrabold text-gray-800 border-b-2 border-gray-200 pb-3 mb-4">
-                            <span className="text-purple-600">⚡</span>
-                            Melhores ofertas
-                        </div>
+                    <div className="lg:w-3/5 bg-gray-50 flex flex-col">
+                        <h2 className="text-xl font-bold bg-purple-50 p-6 border-b border-purple-100 flex items-center gap-2">
+                            <span className="text-purple-600">⚡</span> Melhores ofertas
+                        </h2>
 
-                        {precos.length > 0 ? (
-                            <div className="space-y-3">
-                                {precos.map((oferta, index) => {
-                                    const isWinner = index === 0
-                                    const storeBadge = getStoreBadge(oferta.loja)
-                                    const dataAtualizacao = oferta.ultima_atualizacao
-                                        ? new Date(oferta.ultima_atualizacao).toLocaleDateString('pt-BR')
-                                        : 'N/A'
+                        <div className="p-6 flex-1">
+                            {uniqueOffers.length > 0 ? (
+                                <div className="space-y-4">
+                                    {uniqueOffers.map((oferta, index) => {
+                                        const isWinner = index === 0
+                                        const storeBadge = getStoreBadge(oferta.loja)
+                                        const dataAtualizacao = oferta.ultima_atualizacao
+                                            ? new Date(oferta.ultima_atualizacao).toLocaleDateString('pt-BR')
+                                            : 'N/A'
 
-                                    return (
-                                        <div
-                                            key={oferta.id}
-                                            className={`relative p-4 rounded-xl border-2 transition-all hover:shadow-md ${isWinner
-                                                ? 'border-green-500 bg-green-50'
-                                                : 'border-gray-200 bg-white hover:-translate-y-0.5'
-                                                }`}
-                                        >
-                                            {isWinner && (
-                                                <div className="absolute -top-2.5 left-4 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
-                                                    🏆 Melhor Preço
-                                                </div>
-                                            )}
+                                        const linkValido = oferta.link_afiliado && oferta.link_afiliado.length > 5 && oferta.link_afiliado !== '#'
 
-                                            <div className="flex items-center justify-between flex-wrap gap-4">
-                                                <div className="space-y-1">
-                                                    <div className="flex items-center gap-2 text-lg font-bold text-gray-800">
-                                                        <span>{storeBadge.emoji}</span>
-                                                        <span>{oferta.loja === 'Manual' ? 'Amazon' : oferta.loja}</span>
+                                        const linkAfiliado = linkValido && oferta.link_afiliado
+                                            ? (oferta.link_afiliado.startsWith('http') ? oferta.link_afiliado : `https://${oferta.link_afiliado}`)
+                                            : '#'
+
+                                        return (
+                                            <div
+                                                key={oferta.id}
+                                                className={`relative p-4 rounded-xl border-2 transition-all hover:shadow-md ${isWinner
+                                                    ? 'border-green-500 bg-green-50'
+                                                    : 'border-gray-200 bg-white hover:-translate-y-0.5'
+                                                    }`}
+                                            >
+                                                {isWinner && (
+                                                    <div className="absolute -top-2.5 left-4 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
+                                                        🏆 Melhor Preço
                                                     </div>
-                                                    <div className="text-xs text-gray-500">
-                                                        Atualizado: {dataAtualizacao}
-                                                    </div>
-                                                </div>
+                                                )}
 
-                                                <div className="flex items-center gap-4">
-                                                    <div className={`text-2xl font-extrabold ${isWinner ? 'text-green-600' : 'text-gray-800'}`}>
-                                                        R$ {oferta.preco.toFixed(2).replace('.', ',')}
+                                                <div className="flex items-center justify-between flex-wrap gap-4">
+                                                    <div className="space-y-1">
+                                                        <div className="flex items-center gap-2 text-lg font-bold text-gray-800">
+                                                            <span>{storeBadge.emoji}</span>
+                                                            <span>{oferta.loja === 'Manual' ? 'Amazon' : oferta.loja}</span>
+                                                        </div>
+                                                        <div className="text-xs text-gray-500">
+                                                            Atualizado: {dataAtualizacao}
+                                                        </div>
                                                     </div>
 
-                                                    <a
-                                                        href={oferta.link_afiliado || '#'}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className={`px-6 py-3 rounded-full font-bold text-base transition-all ${isWinner
-                                                            ? 'bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-200 animate-pulse'
-                                                            : 'border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
-                                                            }`}
-                                                    >
-                                                        🛒 Comprar Agora
-                                                    </a>
+                                                    <div className="flex items-center gap-4">
+                                                        <div className={`text-2xl font-extrabold ${isWinner ? 'text-green-600' : 'text-gray-800'}`}>
+                                                            R$ {oferta.preco.toFixed(2).replace('.', ',')}
+                                                        </div>
+
+                                                        {linkValido ? (
+                                                            <a
+                                                                href={linkAfiliado}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className={`px-6 py-3 rounded-full font-bold text-base transition-all ${isWinner
+                                                                    ? 'bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-200 animate-pulse'
+                                                                    : 'border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
+                                                                    }`}
+                                                            >
+                                                                🛒 Comprar Agora
+                                                            </a>
+                                                        ) : (
+                                                            <button
+                                                                disabled
+                                                                className="px-6 py-3 rounded-full font-bold text-base bg-gray-200 text-gray-400 cursor-not-allowed"
+                                                                title="Link indisponível no momento"
+                                                            >
+                                                                Indisponível
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        ) : (
-                            <div className="text-center py-12 bg-white rounded-xl">
-                                <div className="text-4xl mb-3">📦</div>
-                                <p className="text-gray-500">
-                                    Nenhuma oferta encontrada para este produto ainda.
-                                </p>
-                                <p className="text-gray-400 text-sm mt-1">
-                                    Rode o sincronizador para atualizar.
-                                </p>
-                            </div>
-                        )}
+                                        )
+                                    })}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-200">
+                                    <div className="text-4xl mb-3">📦</div>
+                                    <p className="text-gray-500">
+                                        Nenhuma oferta encontrada para este produto ainda.
+                                    </p>
+                                    <p className="text-gray-400 text-sm mt-1">
+                                        Rode o sincronizador para atualizar.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             </main>
+
+            {/* Seção de Economia e Avaliações */}
+            <section className="max-w-4xl mx-auto px-4 py-8">
+                <ProductPageClient
+                    produtoId={produto.id}
+                    produtoNome={produto.nome}
+                    precos={precos}
+                />
+            </section>
 
             <Footer />
         </div>

@@ -1,6 +1,18 @@
 import { supabase } from '@/lib/supabase'
 import { MetadataRoute } from 'next'
 
+// Categorias disponíveis
+const CATEGORIAS = [
+    'racoes',
+    'higiene',
+    'medicamentos',
+    'brinquedos',
+    'gatos',
+    'caes',
+    'petiscos',
+    'acessorios'
+]
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://guiadopet.com.br'
 
@@ -13,6 +25,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 1,
         },
     ]
+
+    // Páginas de categoria
+    const categoryPages: MetadataRoute.Sitemap = CATEGORIAS.map((slug) => ({
+        url: `${baseUrl}/categoria/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'daily' as const,
+        priority: 0.9,
+    }))
 
     // Busca todos os produtos
     const { data: produtos } = await supabase
@@ -28,5 +48,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }))
 
-    return [...staticPages, ...productPages]
+    return [...staticPages, ...categoryPages, ...productPages]
 }

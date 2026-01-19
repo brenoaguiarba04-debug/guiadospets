@@ -1,0 +1,206 @@
+codigo,categoria,marca,nome,peso_variacao,animal,descricao
+RAC001,Ração,Golden,"Ração Golden Special Cães Adultos Frango e Carne",15kg,Cachorro,Ração premium para cães adultos
+RAC002,Ração,Golden,"Ração Golden Special Cães Adultos Frango e Carne",10.1kg,Cachorro,Ração premium para cães adultos
+RAC003,Ração,Golden,"Ração Golden Special Cães Adultos Frango e Carne",3kg,Cachorro,Ração premium para cães adultos
+RAC004,Ração,Golden,"Ração Golden Seleção Natural Cães Adultos",12kg,Cachorro,Ração natural para cães adultos
+RAC005,Ração,Golden,"Ração Golden Seleção Natural Cães Adultos",3kg,Cachorro,Ração natural para cães adultos
+RAC006,Ração,Golden,"Ração Golden Mega Cães Adultos Raças Grandes",15kg,Cachorro,Ração para raças grandes
+RAC007,Ração,Golden,"Ração Golden Formula Cães Filhotes Frango e Arroz",15kg,Cachorro,Ração para filhotes
+RAC008,Ração,Golden,"Ração Golden Formula Cães Filhotes Frango e Arroz",3kg,Cachorro,Ração para filhotes
+RAC009,Ração,Premier,"Ração Premier Formula Cães Adultos Raças Pequenas",15kg,Cachorro,Ração super premium
+RAC010,Ração,Premier,"Ração Premier Formula Cães Adultos Raças Pequenas",7.5kg,Cachorro,Ração super premium
+RAC011,Ração,Premier,"Ração Premier Formula Cães Adultos Raças Pequenas",2.5kg,Cachorro,Ração super premium
+RAC012,Ração,Premier,"Ração Premier Formula Cães Adultos Raças Grandes",15kg,Cachorro,Ração super premium
+RAC013,Ração,Premier,"Ração Premier Formula Cães Filhotes Raças Pequenas",12kg,Cachorro,Ração para filhotes
+RAC014,Ração,Premier,"Ração Premier Formula Cães Filhotes Raças Pequenas",2.5kg,Cachorro,Ração para filhotes
+RAC015,Ração,Premier,"Ração Premier Formula Cães Sênior Raças Pequenas",12kg,Cachorro,Ração para cães idosos
+RAC016,Ração,Premier,"Ração Premier Nattu Cães Adultos Mandioca",12kg,Cachorro,Ração natural
+RAC017,Ração,Premier,"Ração Premier Nattu Cães Adultos Mandioca",2.5kg,Cachorro,Ração natural
+RAC018,Ração,Royal Canin,"Ração Royal Canin Mini Adult",7.5kg,Cachorro,Ração premium para raças pequenas
+RAC019,Ração,Royal Canin,"Ração Royal Canin Mini Adult",3kg,Cachorro,Ração premium para raças pequenas
+RAC020,Ração,Royal Canin,"Ração Royal Canin Medium Adult",15kg,Cachorro,Ração premium para raças médias
+RAC021,Ração,Royal Canin,"Ração Royal Canin Maxi Adult",15kg,Cachorro,Ração premium para raças grandes
+RAC022,Ração,Royal Canin,"Ração Royal Canin Mini Puppy",3kg,Cachorro,Ração para filhotes pequenos
+RAC023,Ração,Royal Canin,"Ração Royal Canin Mini Puppy",7.5kg,Cachorro,Ração para filhotes pequenos
+RAC024,Ração,Royal Canin,"Ração Royal Canin Hypoallergenic Small Dog",2kg,Cachorro,Ração hipoalergênica
+RAC025,Ração,Royal Canin,"Ração Royal Canin Hypoallergenic Small Dog",7.5kg,Cachorro,Ração hipoalergênica
+RAC026,Ração,Guabi,"Ração Guabi Natural Cães Adultos Raças Médias",15kg,Cachorro,Ração natural
+RAC027,Ração,Guabi,"Ração Guabi Natural Cães Adultos Raças Médias",12kg,Cachorro,Ração natural
+RAC028,Ração,Guabi,"Ração Guabi Natural Cães Adultos Raças Pequenas",12kg,Cachorro,Ração natural
+RAC029,Ração,Guabi,"Ração Guabi Natural Cães Adultos Raças Pequenas",2.5kg,Cachorro,Ração natural
+RAC030,Ração,Pedigree,"Ração Pedigree Cães Adultos Carne e Vegetais",20kg,Cachorro,Ração econômica
+RAC031,Ração,Pedigree,"Ração Pedigree Cães Adultos Carne e Vegetais",10kg,Cachorro,Ração econômica
+RAC032,Ração,Pedigree,"Ração Pedigree Cães Adultos Carne e Vegetais",3kg,Cachorro,Ração econômica
+RAC033,Ração,Pedigree,"Ração Pedigree Cães Filhotes",15kg,Cachorro,Ração para filhotes
+RAC034,Ração,Pedigree,"Ração Pedigree Cães Filhotes",3kg,Cachorro,Ração para filhotes
+RAC035,Ração,Magnus,"Ração Magnus Premium Cães Adultos",25kg,Cachorro,Ração premium
+RAC036,Ração,Magnus,"Ração Magnus Premium Cães Adultos",15kg,Cachorro,Ração premium
+RAC037,Ração,Magnus,"Ração Magnus Premium Cães Filhotes",15kg,Cachorro,Ração para filhotes
+RAC038,Ração,Gran Plus,"Ração Gran Plus Cães Adultos Frango e Arroz",15kg,Cachorro,Ração premium
+RAC039,Ração,Gran Plus,"Ração Gran Plus Cães Adultos Frango e Arroz",3kg,Cachorro,Ração premium
+RAC040,Ração,Origem,"Ração Origem Natural Cães Adultos",12kg,Cachorro,Ração natural
+RAC041,Ração,Origem,"Ração Origem Natural Cães Adultos",3kg,Cachorro,Ração natural
+RAC042,Ração,N&D,"Ração Farmina N&D Ancestral Cães Adultos",10.1kg,Cachorro,Ração super premium grain free
+RAC043,Ração,N&D,"Ração Farmina N&D Ancestral Cães Adultos",2.5kg,Cachorro,Ração super premium grain free
+RAC044,Ração,Quatree,"Ração Quatree Supreme Cães Adultos Raças Pequenas",15kg,Cachorro,Ração super premium
+RAC045,Ração,Quatree,"Ração Quatree Supreme Cães Adultos Raças Pequenas",3kg,Cachorro,Ração super premium
+RAC046,Ração,Hill's,"Ração Hill's Science Diet Cães Adultos Raças Pequenas",6kg,Cachorro,Ração super premium
+RAC047,Ração,Hill's,"Ração Hill's Science Diet Cães Adultos Raças Pequenas",2.4kg,Cachorro,Ração super premium
+RAC048,Ração,Whiskas,"Ração Whiskas Gatos Adultos Carne",10.1kg,Gato,Ração para gatos adultos
+RAC049,Ração,Whiskas,"Ração Whiskas Gatos Adultos Carne",3kg,Gato,Ração para gatos adultos
+RAC050,Ração,Whiskas,"Ração Whiskas Gatos Filhotes",10.1kg,Gato,Ração para filhotes
+RAC051,Ração,Whiskas,"Ração Whiskas Gatos Filhotes",3kg,Gato,Ração para filhotes
+RAC052,Ração,Golden,"Ração Golden Gatos Adultos Castrados Frango",10.1kg,Gato,Ração para gatos castrados
+RAC053,Ração,Golden,"Ração Golden Gatos Adultos Castrados Frango",3kg,Gato,Ração para gatos castrados
+RAC054,Ração,Royal Canin,"Ração Royal Canin Fit 32 Gatos Adultos",10kg,Gato,Ração premium para gatos
+RAC055,Ração,Royal Canin,"Ração Royal Canin Fit 32 Gatos Adultos",4kg,Gato,Ração premium para gatos
+RAC056,Ração,Royal Canin,"Ração Royal Canin Indoor Gatos Adultos",7.5kg,Gato,Ração para gatos indoor
+RAC057,Ração,Royal Canin,"Ração Royal Canin Indoor Gatos Adultos",1.5kg,Gato,Ração para gatos indoor
+RAC058,Ração,Premier,"Ração Premier Gatos Adultos Castrados Frango",7.5kg,Gato,Ração super premium
+RAC059,Ração,Premier,"Ração Premier Gatos Adultos Castrados Frango",1.5kg,Gato,Ração super premium
+RAC060,Ração,Premier,"Ração Premier Gatos Adultos Pelo Longo",7.5kg,Gato,Ração super premium
+ANT001,Antipulgas,MSD,"Bravecto Cães 2 a 4.5kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 3 meses
+ANT002,Antipulgas,MSD,"Bravecto Cães 4.5 a 10kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 3 meses
+ANT003,Antipulgas,MSD,"Bravecto Cães 10 a 20kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 3 meses
+ANT004,Antipulgas,MSD,"Bravecto Cães 20 a 40kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 3 meses
+ANT005,Antipulgas,MSD,"Bravecto Cães 40 a 56kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 3 meses
+ANT006,Antipulgas,Boehringer,"NexGard Spectra Cães 2 a 3.5kg 1 Tablete",-,Cachorro,Antipulgas carrapaticida e vermífugo
+ANT007,Antipulgas,Boehringer,"NexGard Spectra Cães 3.6 a 7.5kg 1 Tablete",-,Cachorro,Antipulgas carrapaticida e vermífugo
+ANT008,Antipulgas,Boehringer,"NexGard Spectra Cães 7.6 a 15kg 1 Tablete",-,Cachorro,Antipulgas carrapaticida e vermífugo
+ANT009,Antipulgas,Boehringer,"NexGard Spectra Cães 15 a 30kg 1 Tablete",-,Cachorro,Antipulgas carrapaticida e vermífugo
+ANT010,Antipulgas,Boehringer,"NexGard Spectra Cães 30 a 60kg 1 Tablete",-,Cachorro,Antipulgas carrapaticida e vermífugo
+ANT011,Antipulgas,Zoetis,"Simparic 5mg Cães 1.3 a 2.5kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 35 dias
+ANT012,Antipulgas,Zoetis,"Simparic 10mg Cães 2.6 a 5kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 35 dias
+ANT013,Antipulgas,Zoetis,"Simparic 20mg Cães 5 a 10kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 35 dias
+ANT014,Antipulgas,Zoetis,"Simparic 40mg Cães 10 a 20kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 35 dias
+ANT015,Antipulgas,Zoetis,"Simparic 80mg Cães 20 a 40kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 35 dias
+ANT016,Antipulgas,Zoetis,"Simparic 120mg Cães 40 a 60kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida 35 dias
+ANT017,Antipulgas,Boehringer,"Frontline Plus Cães 1 a 10kg",-,Cachorro,Antipulgas spray topline
+ANT018,Antipulgas,Boehringer,"Frontline Plus Cães 10 a 20kg",-,Cachorro,Antipulgas spray topline
+ANT019,Antipulgas,Boehringer,"Frontline Plus Cães 20 a 40kg",-,Cachorro,Antipulgas spray topline
+ANT020,Antipulgas,Boehringer,"Frontline Plus Gatos",-,Gato,Antipulgas spray topline
+ANT021,Antipulgas,Elanco,"Credelio Cães 1.3 a 2.5kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida mensal
+ANT022,Antipulgas,Elanco,"Credelio Cães 2.5 a 5.5kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida mensal
+ANT023,Antipulgas,Elanco,"Credelio Cães 5.5 a 11kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida mensal
+ANT024,Antipulgas,Elanco,"Credelio Cães 11 a 22kg 1 Comprimido",-,Cachorro,Antipulgas e carrapaticida mensal
+ANT025,Antipulgas,MSD,"Bravecto Transdermal Gatos 1.2 a 2.8kg",-,Gato,Antipulgas transdermal 3 meses
+ANT026,Antipulgas,MSD,"Bravecto Transdermal Gatos 2.8 a 6.25kg",-,Gato,Antipulgas transdermal 3 meses
+ANT027,Antipulgas,MSD,"Bravecto Transdermal Gatos 6.25 a 12.5kg",-,Gato,Antipulgas transdermal 3 meses
+ANT028,Antipulgas,Elanco,"Advantage Max 3 Cães 4 a 10kg",-,Cachorro,Antipulgas carrapatos e mosquitos
+ANT029,Antipulgas,Elanco,"Advantage Max 3 Cães 10 a 25kg",-,Cachorro,Antipulgas carrapatos e mosquitos
+ANT030,Antipulgas,Elanco,"Advantage Max 3 Cães 25 a 40kg",-,Cachorro,Antipulgas carrapatos e mosquitos
+VER001,Vermífugo,Vetnil,"Vermífugo Vermivet Plus Cães 660mg 4 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER002,Vermífugo,Vetnil,"Vermífugo Vermivet Plus Gatos 300mg 4 Comprimidos",-,Gato,Vermífugo de amplo espectro
+VER003,Vermífugo,Ceva,"Drontal Plus Cães 10kg 4 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER004,Vermífugo,Ceva,"Drontal Plus Cães 35kg 2 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER005,Vermífugo,Ceva,"Drontal Gatos 4 Comprimidos",-,Gato,Vermífugo de amplo espectro
+VER006,Vermífugo,World,"Vermífugo Canex Plus 3 Cães 10kg 4 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER007,Vermífugo,World,"Vermífugo Canex Plus 3 Cães 40kg 4 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER008,Vermífugo,World,"Vermífugo Helfine Plus Cães 4 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER009,Vermífugo,World,"Vermífugo Helfine Plus Gatos 2 Comprimidos",-,Gato,Vermífugo de amplo espectro
+VER010,Vermífugo,Vetnil,"Vermífugo Top Dog 30kg 3 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER011,Vermífugo,Vetnil,"Vermífugo Top Dog 10kg 4 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER012,Vermífugo,Vetnil,"Vermífugo Top Dog 2.5kg 4 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER013,Vermífugo,Vetnil,"Vermífugo Endal Plus Pasta 6g",6g,Cachorro,Vermífugo em pasta
+VER014,Vermífugo,Virbac,"Vermífugo Milbemax Cães 5 a 25kg 2 Comprimidos",-,Cachorro,Vermífugo de amplo espectro
+VER015,Vermífugo,Virbac,"Vermífugo Milbemax Gatos 2 a 8kg 2 Comprimidos",-,Gato,Vermífugo de amplo espectro
+HIG001,Higiene,Sanol,"Shampoo Sanol Dog Pelos Claros",500ml,Cachorro,Shampoo para pelos claros
+HIG002,Higiene,Sanol,"Shampoo Sanol Dog Neutro",500ml,Cachorro,Shampoo neutro
+HIG003,Higiene,Sanol,"Shampoo Sanol Dog Pelos Escuros",500ml,Cachorro,Shampoo para pelos escuros
+HIG004,Higiene,Sanol,"Shampoo Sanol Dog Antipulgas",500ml,Cachorro,Shampoo antipulgas
+HIG005,Higiene,Sanol,"Condicionador Sanol Dog Neutro",500ml,Cachorro,Condicionador para cães
+HIG006,Higiene,Sanol,"Colônia Sanol Dog",120ml,Cachorro,Colônia perfumada
+HIG007,Higiene,K-Dog,"Shampoo K-Dog Pelos Claros",500ml,Cachorro,Shampoo para pelos claros
+HIG008,Higiene,K-Dog,"Shampoo K-Dog Anti-Coceira",500ml,Cachorro,Shampoo anti-coceira
+HIG009,Higiene,Virbac,"Shampoo Allermyl Glyco",500ml,Cachorro,Shampoo dermatológico
+HIG010,Higiene,Virbac,"Shampoo Allermyl Glyco",250ml,Cachorro,Shampoo dermatológico
+HIG011,Higiene,Virbac,"Shampoo Hexadene Spherulites",500ml,Cachorro,Shampoo antibacteriano
+HIG012,Higiene,Centagro,"Spray Limpador de Orelhas Oto-Guard",100ml,Cachorro,Limpador auricular
+HIG013,Higiene,Virbac,"Shampoo Epi-Soothe",500ml,Cachorro,Shampoo para pele sensível
+HIG014,Higiene,Pet Society,"Shampoo Pet Society Hydra Pro Nourish",500ml,Cachorro,Shampoo hidratante
+HIG015,Higiene,Pet Society,"Condicionador Pet Society Hydra",500ml,Cachorro,Condicionador hidratante
+HIG016,Higiene,Procão,"Limpador de Orelhas Procão",100ml,Cachorro,Limpador auricular
+HIG017,Higiene,Centagro,"Spray Dental Fresh Para Pets",100ml,Cachorro/Gato,Spray bucal
+HIG018,Higiene,Virbac,"Shampoo Sebocalm Spherulites",250ml,Cachorro,Shampoo para seborreia
+HIG019,Higiene,Sanol,"Talco Sanol Dog",100g,Cachorro,Talco perfumado
+HIG020,Higiene,Pro Canine,"Pasta de Dente Pro Canine Menta",60g,Cachorro,Pasta dental
+PET001,Petisco,Pedigree,"Petisco Pedigree Dentastix Cães Raças Grandes",270g,Cachorro,Petisco dental
+PET002,Petisco,Pedigree,"Petisco Pedigree Dentastix Cães Raças Médias",180g,Cachorro,Petisco dental
+PET003,Petisco,Pedigree,"Petisco Pedigree Dentastix Cães Raças Pequenas",110g,Cachorro,Petisco dental
+PET004,Petisco,Pedigree,"Petisco Pedigree Biscrok Cães Filhotes",300g,Cachorro,Biscoito para filhotes
+PET005,Petisco,Pedigree,"Petisco Pedigree Marrobone Multi",200g,Cachorro,Petisco ossinho
+PET006,Petisco,Purina,"Petisco Purina Dentalife Cães Raças Grandes",196g,Cachorro,Petisco dental
+PET007,Petisco,Purina,"Petisco Purina Dentalife Cães Raças Médias",115g,Cachorro,Petisco dental
+PET008,Petisco,Purina,"Petisco Purina Dentalife Cães Raças Pequenas",42g,Cachorro,Petisco dental
+PET009,Petisco,Premier,"Petisco Premier Cookie Cães Filhotes",250g,Cachorro,Biscoito para filhotes
+PET010,Petisco,Premier,"Petisco Premier Cookie Cães Adultos",250g,Cachorro,Biscoito para adultos
+PET011,Petisco,Premier,"Petisco Premier Nattu Sticks Frango",70g,Cachorro,Palito natural
+PET012,Petisco,Whiskas,"Petisco Whiskas Temptations Gatos Frango",75g,Gato,Petisco para gatos
+PET013,Petisco,Whiskas,"Petisco Whiskas Temptations Gatos Salmão",75g,Gato,Petisco para gatos
+PET014,Petisco,Purina,"Petisco Friskies Party Mix Gatos",40g,Gato,Petisco para gatos
+PET015,Petisco,DogLicious,"Osso DogLicious Natural Bovino",150g,Cachorro,Osso natural
+PET016,Petisco,DogLicious,"Osso DogLicious Natural Bovino",300g,Cachorro,Osso natural
+PET017,Petisco,DogLicious,"Osso DogLicious Palito Fino",100g,Cachorro,Palito para cães
+PET018,Petisco,Keldog,"Bifinho Keldog Carne",55g,Cachorro,Bifinho para cães
+PET019,Petisco,Keldog,"Bifinho Keldog Frango",55g,Cachorro,Bifinho para cães
+PET020,Petisco,GranPlus,"Petisco GranPlus Gourmet Ovinhos",500g,Cachorro,Ovinhos para cães
+BRI001,Brinquedo,Kong,"Kong Classic Cães Raças Médias",M,Cachorro,Brinquedo recheável
+BRI002,Brinquedo,Kong,"Kong Classic Cães Raças Pequenas",S,Cachorro,Brinquedo recheável
+BRI003,Brinquedo,Kong,"Kong Classic Cães Raças Grandes",L,Cachorro,Brinquedo recheável
+BRI004,Brinquedo,Kong,"Kong Extreme Cães Raças Médias",M,Cachorro,Brinquedo super resistente
+BRI005,Brinquedo,Kong,"Kong Extreme Cães Raças Grandes",L,Cachorro,Brinquedo super resistente
+BRI006,Brinquedo,Furacão Pet,"Mordedor Furacão Pet Osso Nylon",M,Cachorro,Mordedor de nylon
+BRI007,Brinquedo,Furacão Pet,"Mordedor Furacão Pet Osso Nylon",G,Cachorro,Mordedor de nylon
+BRI008,Brinquedo,Furacão Pet,"Bola Maciça Furacão Pet",55mm,Cachorro,Bola resistente
+BRI009,Brinquedo,Furacão Pet,"Bola Maciça Furacão Pet",75mm,Cachorro,Bola resistente
+BRI010,Brinquedo,Jambo,"Pelúcia Jambo Monstro",M,Cachorro,Pelúcia para cães
+BRI011,Brinquedo,Jambo,"Pelúcia Jambo Porquinho",P,Cachorro,Pelúcia para cães
+BRI012,Brinquedo,Truqys,"Brinquedo Interativo Truqys Tabuleiro",Único,Cachorro,Brinquedo inteligente
+BRI013,Brinquedo,PetGames,"Bolinha com Som PetGames",Único,Cachorro,Bola com guincho
+BRI014,Brinquedo,Catit,"Arranhador Catit Play N Scratch",Único,Gato,Arranhador para gatos
+BRI015,Brinquedo,Catit,"Circuito Catit Play",Único,Gato,Brinquedo interativo
+ACC001,Acessório,Fury,"Coleira Fury Nylon Ajustável Cães",P,Cachorro,Coleira de nylon
+ACC002,Acessório,Fury,"Coleira Fury Nylon Ajustável Cães",M,Cachorro,Coleira de nylon
+ACC003,Acessório,Fury,"Coleira Fury Nylon Ajustável Cães",G,Cachorro,Coleira de nylon
+ACC004,Acessório,Fury,"Guia Fury Nylon Cães",1.2m,Cachorro,Guia de nylon
+ACC005,Acessório,Fury,"Guia Fury Nylon Cães",1.5m,Cachorro,Guia de nylon
+ACC006,Acessório,Ferplast,"Peitoral Ferplast Easy P",P,Cachorro,Peitoral seguro
+ACC007,Acessório,Ferplast,"Peitoral Ferplast Easy P",M,Cachorro,Peitoral seguro
+ACC008,Acessório,Ferplast,"Peitoral Ferplast Easy P",G,Cachorro,Peitoral seguro
+ACC009,Acessório,Zee Dog,"Guia Zee Dog Mesh Plus",Único,Cachorro,Guia retrátil
+ACC010,Acessório,Flexi,"Guia Retrátil Flexi New Classic",5m,Cachorro,Guia retrátil
+ACC011,Acessório,Flexi,"Guia Retrátil Flexi New Classic",8m,Cachorro,Guia retrátil
+ACC012,Acessório,Chalesco,"Comedouro Inox Chalesco",300ml,Cachorro/Gato,Comedouro de inox
+ACC013,Acessório,Chalesco,"Comedouro Inox Chalesco",700ml,Cachorro/Gato,Comedouro de inox
+ACC014,Acessório,Chalesco,"Comedouro Inox Chalesco",1.5L,Cachorro/Gato,Comedouro de inox
+ACC015,Acessório,Furacão Pet,"Bebedouro Automático Furacão Pet",2L,Cachorro/Gato,Bebedouro fonte
+ACC016,Acessório,Furacão Pet,"Bebedouro Automático Furacão Pet",3L,Cachorro/Gato,Bebedouro fonte
+ACC017,Acessório,CatIt,"Fonte de Água CatIt Flower Fountain",3L,Gato,Fonte para gatos
+ACC018,Acessório,Plast Pet,"Caixa de Transporte Plast Pet Panther",N1,Cachorro/Gato,Caixa de transporte
+ACC019,Acessório,Plast Pet,"Caixa de Transporte Plast Pet Panther",N2,Cachorro/Gato,Caixa de transporte
+ACC020,Acessório,Plast Pet,"Caixa de Transporte Plast Pet Panther",N3,Cachorro/Gato,Caixa de transporte
+MED001,Medicamento,Zoetis,"Apoquel 16mg Cães 20 Comprimidos",-,Cachorro,Antialérgico para dermatite
+MED002,Medicamento,Zoetis,"Apoquel 5.4mg Cães 20 Comprimidos",-,Cachorro,Antialérgico para dermatite
+MED003,Medicamento,Zoetis,"Apoquel 3.6mg Cães 20 Comprimidos",-,Cachorro,Antialérgico para dermatite
+MED004,Medicamento,Vetoquinol,"Otomax Pomada Auricular",10g,Cachorro/Gato,Pomada para otite
+MED005,Medicamento,Virbac,"Epiotic Limpador Auricular",125ml,Cachorro/Gato,Limpador de ouvido
+MED006,Medicamento,Virbac,"Epiotic Limpador Auricular",250ml,Cachorro/Gato,Limpador de ouvido
+MED007,Medicamento,MSD,"Posatex Suspensão Auricular",17.5ml,Cachorro,Otológico
+MED008,Medicamento,Elanco,"Surolan",15ml,Cachorro/Gato,Otológico
+MED009,Medicamento,Virbac,"Rilexine 300mg 14 Comprimidos",-,Cachorro/Gato,Antibiótico
+MED010,Medicamento,Virbac,"Rilexine 600mg 14 Comprimidos",-,Cachorro,Antibiótico
+MED011,Medicamento,Bayer,"Drontal Plus Sabor Cães 10kg",-,Cachorro,Vermífugo palatável
+MED012,Medicamento,MSD,"Marbopet 27.5mg 10 Comprimidos",-,Cachorro,Antibiótico
+MED013,Medicamento,MSD,"Marbopet 55mg 10 Comprimidos",-,Cachorro,Antibiótico
+MED014,Medicamento,Virbac,"Cortavance Spray",76ml,Cachorro,Anti-inflamatório tópico
+MED015,Medicamento,Vetnil,"Prediderm 5mg 10 Comprimidos",-,Cachorro/Gato,Corticoide
+SAU001,Suplemento,Organnact,"Suplemento Organnact Pelo e Derme",30ml,Cachorro/Gato,Suplemento para pele e pelo
+SAU002,Suplemento,Organnact,"Suplemento Organnact Pelo e Derme",60ml,Cachorro/Gato,Suplemento para pele e pelo
+SAU003,Suplemento,Organnact,"Suplemento Organnact Pelo e Derme Gold",60ml,Cachorro/Gato,Suplemento premium
+SAU004,Suplemento,Vetnil,"Suplemento Glicopan Pet",125ml,Cachorro/Gato,Suplemento vitamínico
+SAU005,Suplemento,Vetnil,"Suplemento Glicopan Pet",250ml,Cachorro/Gato,Suplemento vitamínico
+SAU006,Suplemento,Mundo Animal,"Suplemento Nutri Omega Dog",60ml,Cachorro,Ômega 3 para cães
+SAU007,Suplemento,Mundo Animal,"Suplemento Nutri Omega Cat",60ml,Gato,Ômega 3 para gatos
+SAU008,Suplemento,Vetnil,"Condroton 1000mg 60 Comprimidos",-,Cachorro,Suplemento articular
+SAU009,Suplemento,Biovet,"Suplemento Promun Dog",60ml,Cachorro,Imunoestimulante
+SAU010,Suplemento,Organnact,"Suplemento Probiótico Proenterex",90g,Cachorro/Gato,Probiótico

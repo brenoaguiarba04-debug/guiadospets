@@ -1,0 +1,52 @@
+[
+  {
+    "codigo": "RAC001",
+    "nome": "Ração Golden Special Cães Adultos Frango e Carne",
+    "precos": [
+      {
+        "nome": "Ração Seca PremieR Pet Golden Special Cães Adultos Frango e Carne - 15Kg",
+        "preco": 159.9,
+        "imagem": "https://www.petlove.com.br/images/products/266036/small/Ra%C3%A7%C3%A3o_Seca_PremieR_Pet_Golden_Special_C%C3%A3es_Adultos_Frango_e_Carne_-_15_Kg_31014070-1_1.jpg?1674068914",
+        "link": null,
+        "loja": "Petlove"
+      },
+      {
+        "nome": "Ração Golden Fórmula para Cães Senior Sabor Frango e Arroz - 15kg",
+        "preco": 186.9,
+        "imagem": "https://images.petz.com.br/fotos/1658431257141_mini.jpg",
+        "link": "https://www.petz.com.br/produto/racao-golden-formula-senior-para-caes-adultos-sabor-frango-e-arroz-15kg-71353",
+        "loja": "Petz"
+      }
+    ]
+  },
+  {
+    "codigo": "RAC002",
+    "nome": "Ração Golden Special Cães Adultos Frango e Carne",
+    "precos": [
+      {
+        "nome": "Ração Seca PremieR Pet Golden Salmão para Gatos Adultos Castrados - 10,1Kg",
+        "preco": 189.9,
+        "imagem": "https://www.petlove.com.br/images/products/266053/small/Ra%C3%A7%C3%A3o_Seca_PremieR_Pet_Golden_Salm%C3%A3o_para_Gatos_Adultos_Castrados_-_10_1_Kg_31022435-3_1.jpg?1674076294",
+        "link": null,
+        "loja": "Petlove"
+      },
+      {
+        "nome": "Ração Royal Canin para Cães Adultos da Raça Golden Retriever - 10,1kg",
+        "preco": 370.99,
+        "imagem": "https://images.petz.com.br/fotos/10001305000284_1749054650178_mini.jpg",
+        "link": "https://www.petz.com.br/produto/racao-royal-canin-para-caes-adultos-da-raca-golden-retriever-10-1kg-194370",
+        "loja": "Petz"
+      }
+    ]
+  },
+  {
+    "codigo": "RAC003",
+    "nome": "Ração Golden Special Cães Adultos Frango e Carne",
+    "precos": []
+  },
+  {
+    "codigo": "RAC004",
+    "nome": "Ração Golden Seleção Natural Cães Adultos",
+    "precos": []
+  }
+]
