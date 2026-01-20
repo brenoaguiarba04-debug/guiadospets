@@ -122,12 +122,12 @@ export default function HomeContent({ grupos, searchTerm }: HomeContentProps) {
                     {gruposComPrecoPorKg.map((grupo) => (
                         <ProductCard
                             key={grupo.nomePrincipal}
-                            nomePrincipal={grupo.nomePrincipal}
-                            imagemCapa={grupo.imagemCapa}
-                            menorPrecoCapa={grupo.menorPrecoCapa}
-                            variacoes={grupo.variacoes}
-                            precoPorKg={grupo.precoPorKg}
-                            pesoKg={grupo.pesoKg}
+                            title={grupo.nomePrincipal}
+                            image={grupo.imagemCapa}
+                            price={grupo.menorPrecoCapa}
+                            slug={`ofertas?q=${encodeURIComponent(grupo.nomePrincipal)}`}
+                            rating={4.8}
+                            reviews={Math.floor(Math.random() * 500) + 50}
                         />
                     ))}
                 </div>
