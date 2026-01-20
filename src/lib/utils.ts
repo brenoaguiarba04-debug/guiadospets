@@ -184,6 +184,111 @@ export function definirGrupo(nome: string): string {
     }
 
     // =====================
+    // FÓRMULA NATURAL (Adimax)
+    // =====================
+
+    if (n.includes('formula natural') || n.includes('fórmula natural')) {
+        let linha = ''
+        if (n.includes('life')) linha = 'Life'
+        else if (n.includes('fresh meat')) linha = 'Fresh Meat'
+        else if (n.includes('pro')) linha = 'Pro'
+
+        // Detecção de sabor específico Fórmula Natural
+        let saborFN = ''
+        if (n.includes('frango')) saborFN = 'Frango'
+        else if (n.includes('cordeiro')) saborFN = 'Cordeiro'
+        else if (n.includes('salmão') || n.includes('salmon')) saborFN = 'Salmão'
+        else if (n.includes('carne')) saborFN = 'Carne'
+        else if (n.includes('peru')) saborFN = 'Peru'
+
+        const partes = ['Ração Fórmula Natural', linha, saborFN, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // GUABI NATURAL
+    // =====================
+
+    if (n.includes('guabi natural')) {
+        // Detecção de sabor específico Guabi Natural
+        let saborGN = ''
+        if (n.includes('frango') && n.includes('arroz')) saborGN = 'Frango e Arroz'
+        else if (n.includes('cordeiro') && n.includes('aveia')) saborGN = 'Cordeiro e Aveia'
+        else if (n.includes('salmão') || n.includes('salmon')) saborGN = 'Salmão'
+        else if (n.includes('frango')) saborGN = 'Frango'
+        else if (n.includes('cordeiro')) saborGN = 'Cordeiro'
+        else if (n.includes('carne')) saborGN = 'Carne'
+
+        const partes = ['Ração Guabi Natural', saborGN, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // GRAN PLUS (Guabi)
+    // =====================
+
+    if (n.includes('gran plus')) {
+        let linha = ''
+        if (n.includes('choice')) linha = 'Choice'
+        else if (n.includes('menu')) linha = 'Menu'
+
+        let saborGP = ''
+        if (n.includes('frango') && n.includes('carne')) saborGP = 'Frango e Carne'
+        else if (n.includes('frango')) saborGP = 'Frango'
+        else if (n.includes('carne')) saborGP = 'Carne'
+        else if (n.includes('salmão') || n.includes('salmon')) saborGP = 'Salmão'
+
+        const partes = ['Ração Gran Plus', linha, saborGP, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // HILL'S
+    // =====================
+
+    if (n.includes('hill') || n.includes("hill's")) {
+        let linha = ''
+        if (n.includes('prescription')) linha = 'Prescription Diet'
+        else if (n.includes('science diet')) linha = 'Science Diet'
+        else if (n.includes('vet essentials')) linha = 'Vet Essentials'
+
+        // Condições específicas
+        let condicao = ''
+        if (n.includes('urinary')) condicao = 'Urinary'
+        else if (n.includes('renal') || n.includes('k/d')) condicao = 'Renal'
+        else if (n.includes('gastro') || n.includes('i/d')) condicao = 'Gastrointestinal'
+        else if (n.includes('weight') || n.includes('r/d')) condicao = 'Weight'
+        else if (n.includes('metabolic')) condicao = 'Metabolic'
+
+        const partes = ["Ração Hill's", linha, condicao, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
+    // N&D / FARMINA
+    // =====================
+
+    if (n.includes('n&d') || n.includes('farmina') || n.includes('n & d')) {
+        let linha = ''
+        if (n.includes('prime')) linha = 'Prime'
+        else if (n.includes('ancestral')) linha = 'Ancestral Grain'
+        else if (n.includes('pumpkin') || n.includes('abóbora')) linha = 'Pumpkin'
+        else if (n.includes('quinoa')) linha = 'Quinoa'
+        else if (n.includes('ocean')) linha = 'Ocean'
+        else if (n.includes('grain free')) linha = 'Grain Free'
+
+        let saborND = ''
+        if (n.includes('frango')) saborND = 'Frango'
+        else if (n.includes('cordeiro')) saborND = 'Cordeiro'
+        else if (n.includes('javali') || n.includes('boar')) saborND = 'Javali'
+        else if (n.includes('peixe') || n.includes('fish')) saborND = 'Peixe'
+        else if (n.includes('bacalhau') || n.includes('cod')) saborND = 'Bacalhau'
+
+        const partes = ['Ração N&D', linha, saborND, fase, porte, especie ? `para ${especie}` : '']
+        return partes.filter(p => p).join(' ')
+    }
+
+    // =====================
     // AREIA
     // =====================
 

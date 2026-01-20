@@ -45,7 +45,7 @@ function generateMockHistory(precoAtual: number): PricePoint[] {
 
 export default function PriceHistory({ produtoId, precoAtual, loja }: PriceHistoryProps) {
     const [history, setHistory] = useState<PricePoint[]>([])
-    const [isExpanded, setIsExpanded] = useState(false)
+    const [isExpanded, setIsExpanded] = useState(true) // Começa expandido para mostrar o gráfico
 
     useEffect(() => {
         // Em produção, buscar do banco de dados
@@ -62,6 +62,20 @@ export default function PriceHistory({ produtoId, precoAtual, loja }: PriceHisto
     // Calcular se está no menor preço histórico
     const isLowestPrice = precoAtual <= minPrice * 1.02 // 2% de margem
     const percentFromLowest = ((precoAtual - minPrice) / minPrice * 100).toFixed(0)
+
+    // Gerar pontos SVG para o gráfico de linha
+    const chartWidth = 100
+    const chartHeight = 80
+    const padding = 10
+
+    const points = history.map((point, index) => {
+        const x = padding + (index / (history.length - 1)) * (chartWidth - 2 * padding)
+        const y = chartHeight - padding - ((point.price - minPrice) / range) * (chartHeight - 2 * padding)
+        return { x, y, ...point }
+    })
+
+    const linePath = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+    const areaPath = `${linePath} L ${points[points.length - 1].x} ${chartHeight - padding} L ${points[0].x} ${chartHeight - padding} Z`
 
     return (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -109,44 +123,87 @@ export default function PriceHistory({ produtoId, precoAtual, loja }: PriceHisto
                         </div>
                     </div>
 
-                    {/* Gráfico Simples (barras) */}
-                    <div className="h-32 flex items-end gap-1 bg-gray-50 rounded-lg p-3">
-                        {history.map((point, index) => {
-                            const height = ((point.price - minPrice) / range * 80) + 20 // Min 20%, max 100%
-                            const isLast = index === history.length - 1
+                    {/* Gráfico SVG de Linha */}
+                    <div className="bg-gradient-to-b from-gray-50 to-white rounded-xl p-4 border border-gray-100">
+                        <svg viewBox={`0 0 ${chartWidth} ${chartHeight + 20}`} className="w-full h-40">
+                            {/* Grid horizontal */}
+                            <line x1={padding} y1={padding} x2={chartWidth - padding} y2={padding}
+                                stroke="#e5e7eb" strokeWidth="0.5" strokeDasharray="2" />
+                            <line x1={padding} y1={chartHeight / 2} x2={chartWidth - padding} y2={chartHeight / 2}
+                                stroke="#e5e7eb" strokeWidth="0.5" strokeDasharray="2" />
+                            <line x1={padding} y1={chartHeight - padding} x2={chartWidth - padding} y2={chartHeight - padding}
+                                stroke="#e5e7eb" strokeWidth="0.5" />
 
-                            return (
-                                <div
+                            {/* Área preenchida sob a linha */}
+                            <defs>
+                                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.3" />
+                                    <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.05" />
+                                </linearGradient>
+                            </defs>
+                            <path d={areaPath} fill="url(#areaGradient)" />
+
+                            {/* Linha do gráfico */}
+                            <path
+                                d={linePath}
+                                fill="none"
+                                stroke="#8b5cf6"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                            />
+
+                            {/* Pontos */}
+                            {points.map((point, index) => {
+                                const isMin = point.price === minPrice
+                                const isMax = point.price === maxPrice
+                                const isLast = index === points.length - 1
+
+                                return (
+                                    <g key={index}>
+                                        <circle
+                                            cx={point.x}
+                                            cy={point.y}
+                                            r={isMin || isMax || isLast ? 4 : 2.5}
+                                            fill={isMin ? '#22c55e' : isMax ? '#ef4444' : isLast ? '#8b5cf6' : '#d1d5db'}
+                                            stroke="white"
+                                            strokeWidth="1.5"
+                                        />
+                                        {/* Tooltip no hover */}
+                                        <title>{`${point.date}: R$ ${point.price.toFixed(2)}`}</title>
+                                    </g>
+                                )
+                            })}
+
+                            {/* Labels de data */}
+                            {points.filter((_, i) => i % 2 === 0 || i === points.length - 1).map((point, index) => (
+                                <text
                                     key={index}
-                                    className="flex-1 flex flex-col items-center gap-1"
-                                    title={`${point.date}: R$ ${point.price.toFixed(2)}`}
+                                    x={point.x}
+                                    y={chartHeight + 12}
+                                    textAnchor="middle"
+                                    className="text-[6px] fill-gray-400"
+                                    style={{ fontSize: '6px' }}
                                 >
-                                    <div
-                                        className={`w-full rounded-t transition-all ${isLast
-                                                ? 'bg-purple-500'
-                                                : point.price === minPrice
-                                                    ? 'bg-green-400'
-                                                    : 'bg-gray-300'
-                                            }`}
-                                        style={{ height: `${height}%` }}
-                                    />
-                                    <span className="text-[8px] text-gray-400 truncate w-full text-center">
-                                        {point.date.split(' ')[0]}
-                                    </span>
-                                </div>
-                            )
-                        })}
+                                    {point.date.split(' ')[0]}
+                                </text>
+                            ))}
+                        </svg>
                     </div>
 
                     {/* Legenda */}
                     <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
                         <span className="flex items-center gap-1">
-                            <span className="w-3 h-3 rounded bg-green-400"></span>
+                            <span className="w-3 h-3 rounded-full bg-green-500"></span>
                             Menor preço
                         </span>
                         <span className="flex items-center gap-1">
-                            <span className="w-3 h-3 rounded bg-purple-500"></span>
+                            <span className="w-3 h-3 rounded-full bg-purple-500"></span>
                             Preço atual
+                        </span>
+                        <span className="flex items-center gap-1">
+                            <span className="w-3 h-3 rounded-full bg-red-500"></span>
+                            Maior preço
                         </span>
                     </div>
 

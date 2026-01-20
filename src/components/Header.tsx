@@ -84,9 +84,8 @@ export default function Header() {
             <nav className="bg-white border-b border-gray-100 hidden md:block">
                 <div className="max-w-7xl mx-auto px-4 py-3 flex gap-4 overflow-x-auto scrollbar-hide text-sm font-bold text-gray-600">
                     {[
-                        { label: '✨ Clube Petlove', link: '#' },
-                        { label: '🩺 Plano de saúde', link: '#' },
-                        { label: '✂️ Serviços', link: '#' },
+                        { label: '🏆 Marcas', link: '/marcas' },
+                        { label: '🎟️ Cupons', link: '/cupons' },
                         { label: '🏷️ Ofertas', link: '/?q=Ofertas' },
                         { label: '🦴 Rações', link: '/categoria/racoes' },
                         { label: '💊 Farmácia', link: '/categoria/medicamentos' },

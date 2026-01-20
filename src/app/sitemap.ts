@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase'
 import { MetadataRoute } from 'next'
+import { topBrands } from '@/lib/brandData'
 
 // Categorias disponíveis
 const CATEGORIAS = [
@@ -24,6 +25,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'daily',
             priority: 1,
         },
+        {
+            url: `${baseUrl}/marcas`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.9,
+        },
+        {
+            url: `${baseUrl}/cupons`,
+            lastModified: new Date(),
+            changeFrequency: 'daily',
+            priority: 0.9,
+        },
     ]
 
     // Páginas de categoria
@@ -32,6 +45,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: new Date(),
         changeFrequency: 'daily' as const,
         priority: 0.9,
+    }))
+
+    // Páginas de marcas
+    const brandPages: MetadataRoute.Sitemap = topBrands.map((brand) => ({
+        url: `${baseUrl}/marca/${brand.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
     }))
 
     // Busca todos os produtos
@@ -48,5 +69,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }))
 
-    return [...staticPages, ...categoryPages, ...productPages]
+    return [...staticPages, ...categoryPages, ...brandPages, ...productPages]
 }
+

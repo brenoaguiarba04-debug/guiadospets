@@ -7,6 +7,8 @@ import { getStoreBadge } from '@/lib/utils'
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
 import ProductPageClient from '@/components/ProductPageClient'
+import ProductFAQ from '@/components/ProductFAQ'
+import ProductDescription from '@/components/ProductDescription'
 
 // Força renderização dinâmica
 export const dynamic = 'force-dynamic'
@@ -284,6 +286,19 @@ export default async function ProdutoPage({ params }: PageProps) {
                     produtoId={produto.id}
                     produtoNome={produto.nome}
                     precos={precos}
+                />
+            </section>
+
+            {/* Seção de Descrição e FAQ */}
+            <section className="max-w-4xl mx-auto px-4 pb-8 space-y-6">
+                <ProductDescription
+                    produtoNome={produto.nome}
+                    categoria={produto.categoria}
+                    marca={produto.marca}
+                />
+                <ProductFAQ
+                    categoria={produto.categoria}
+                    produtoNome={produto.nome}
                 />
             </section>
 
