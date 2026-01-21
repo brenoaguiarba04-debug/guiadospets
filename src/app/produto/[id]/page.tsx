@@ -112,6 +112,10 @@ function ProductSchema({ produto, precos }: { produto: { nome: string; marca: st
     )
 }
 
+import { getProdutos, agruparProdutos, definirGrupo, Variacao } from '@/lib/utils'
+
+// ... imports remain the same ...
+
 export default async function ProdutoPage({ params }: PageProps) {
     const { id } = await params
     const produtoId = parseInt(id)
@@ -127,6 +131,22 @@ export default async function ProdutoPage({ params }: PageProps) {
     }
 
     const { produto, precos } = data
+
+    // 1. Identificar Grupo do Produto Atual
+    const nomeGrupo = definirGrupo(produto.nome)
+
+    // 2. Buscar produtos irmãos (mesmo grupo)
+    // Usamos o nome do grupo como termo de busca para encontrar candidatos
+    const produtosIrmaosCandidatos = await getProdutos(nomeGrupo)
+
+    // 3. Agrupar para filtrar e organizar corretamente
+    const grupos = agruparProdutos(produtosIrmaosCandidatos)
+
+    // 4. Encontrar o grupo específico deste produto
+    const grupoAtual = grupos.find(g => g.nomePrincipal === nomeGrupo)
+
+    // 5. Extrair variações (se houver)
+    const variacoes = grupoAtual?.variacoes || []
 
     // Deduplicar ofertas por loja (mantém a de menor preço)
     const uniqueOffers = Object.values(
@@ -187,6 +207,36 @@ export default async function ProdutoPage({ params }: PageProps) {
 
                     {/* Offers Column */}
                     <div className="lg:w-3/5 bg-gray-50 flex flex-col">
+
+                        {/* Seção de Variantes (Peso/Tamanho) */}
+                        {variacoes.length > 1 && (
+                            <div className="p-6 bg-white border-b border-gray-100">
+                                <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3">
+                                    Selecione a opção:
+                                </h3>
+                                <div className="flex flex-wrap gap-2">
+                                    {variacoes.map((v) => {
+                                        const isSelected = v.id === produtoId
+                                        return (
+                                            <Link
+                                                key={v.id}
+                                                href={`/produto/${v.id}`}
+                                                className={`
+                                                    px-4 py-2 rounded-lg text-sm font-bold border-2 transition-all
+                                                    ${isSelected
+                                                        ? 'border-purple-600 bg-purple-50 text-purple-700'
+                                                        : 'border-gray-200 bg-white text-gray-600 hover:border-purple-300 hover:text-purple-600'
+                                                    }
+                                                `}
+                                            >
+                                                {v.label}
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
                         <h2 className="text-xl font-bold bg-purple-50 p-6 border-b border-purple-100 flex items-center gap-2">
                             <span className="text-purple-600">⚡</span> Melhores ofertas
                         </h2>

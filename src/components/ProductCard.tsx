@@ -1,7 +1,16 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+
+export interface VariantData {
+    id: number
+    label: string
+    imagem: string
+    preco: number
+    loja: string
+}
 
 interface ProductCardProps {
     title: string
@@ -11,11 +20,13 @@ interface ProductCardProps {
     store?: string
     rating?: number
     reviews?: number
+    id?: number
     slug?: string
     offerBadge?: boolean
     cashback?: string
     // Legacy props support (optional)
     nomePrincipal?: string
+    variants?: VariantData[]
 }
 
 export default function ProductCard({
@@ -26,20 +37,46 @@ export default function ProductCard({
     store = 'Melhor Oferta',
     rating = 4.8,
     reviews = 0,
+    id,
     slug = '#',
     offerBadge,
     cashback,
-    nomePrincipal
+    nomePrincipal,
+    variants
 }: ProductCardProps) {
-    // Fallback for title if using legacy prop
-    const displayTitle = title || nomePrincipal || 'Produto sem nome'
+    // State for interactive variants
+    const [selectedVariant, setSelectedVariant] = useState<VariantData | null>(null)
+
+    // Reset selection when title changes (new product loaded in same slot)
+    useEffect(() => {
+        setSelectedVariant(null)
+    }, [title, nomePrincipal])
+
+    // Determine values to display (Selected Variant OR Default Props)
+    const activeImage = selectedVariant?.imagem || image
+    const activeTitle = title || nomePrincipal || 'Produto sem nome'
+    const activePrice = selectedVariant?.preco || price
+    const activeStore = selectedVariant?.loja || store
+    const activeId = selectedVariant?.id || id
 
     // Safe price display
-    const formattedPrice = (typeof price === 'number')
-        ? price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
+    const formattedPrice = (typeof activePrice === 'number')
+        ? activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         : '0,00'
 
-    const productLink = slug && slug !== '#' ? `/produto/${slug}` : `/ofertas?q=${encodeURIComponent(displayTitle)}`
+    // Generate accurate link
+    let productLink = '#'
+    if (activeId) {
+        productLink = `/produto/${activeId}`
+    } else if (slug && slug !== '#') {
+        if (slug.startsWith('ofertas') || slug.startsWith('/') || slug.startsWith('http')) {
+            productLink = slug.startsWith('ofertas') ? `/${slug}` : slug
+        } else {
+            productLink = `/?q=${slug}`
+        }
+    } else {
+        productLink = `/?q=${encodeURIComponent(activeTitle)}`
+    }
 
     return (
         <Link href={productLink} className="group bg-white rounded-xl border border-gray-200 p-4 hover:shadow-xl transition-all hover:border-purple-300 flex flex-col h-full relative overflow-hidden">
@@ -60,9 +97,8 @@ export default function ProductCard({
 
             {/* Image Area */}
             <div className="relative w-full h-48 mb-4 flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
-                {/* Using unoptimized img for demo if external, or next/image usually */}
-                {image ? (
-                    <img src={image} alt={displayTitle} className="max-h-full max-w-full object-contain" />
+                {activeImage ? (
+                    <img src={activeImage} alt={activeTitle} className="max-h-full max-w-full object-contain" />
                 ) : (
                     <div className="w-full h-full bg-gray-100 flex items-center justify-center text-2xl">🐾</div>
                 )}
@@ -71,7 +107,7 @@ export default function ProductCard({
             {/* Content */}
             <div className="flex-1 flex flex-col">
                 {/* Title */}
-                <h3 className="text-sm font-medium text-gray-800 line-clamp-2 mb-2 min-h-[40px] group-hover:text-[#6b21a8] transition-colors">{displayTitle}</h3>
+                <h3 className="text-sm font-medium text-gray-800 line-clamp-2 mb-2 min-h-[40px] group-hover:text-[#6b21a8] transition-colors">{activeTitle}</h3>
 
                 {/* Rating */}
                 <div className="flex items-center gap-1 mb-3">
@@ -85,12 +121,42 @@ export default function ProductCard({
                     <span className="text-xs text-gray-400">({reviews})</span>
                 </div>
 
+                {/* Variants (Weights) */}
+                {variants && variants.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                        {variants.slice(0, 3).map((variant, i) => {
+                            const isSelected = selectedVariant?.id === variant.id
+                            return (
+                                <button
+                                    key={i}
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        e.stopPropagation()
+                                        setSelectedVariant(variant)
+                                    }}
+                                    className={`text-[10px] px-2 py-1 rounded border transition-colors ${isSelected
+                                        ? 'bg-purple-100 border-purple-300 text-purple-700 font-bold'
+                                        : 'bg-white text-gray-600 border-gray-200 hover:border-purple-200'
+                                        }`}
+                                >
+                                    {variant.label}
+                                </button>
+                            )
+                        })}
+                        {variants.length > 3 && (
+                            <span className="text-[10px] text-gray-500 px-1 py-0.5 self-center">
+                                +{variants.length - 3}
+                            </span>
+                        )}
+                    </div>
+                )}
+
                 {/* Price Block */}
                 <div className="mt-auto">
 
                     {/* Store Badge */}
                     <div className="text-[10px] text-gray-500 mb-1 flex items-center gap-1">
-                        Menor preço via <span className="font-bold text-[#522166]">{store}</span>
+                        Menor preço via <span className="font-bold text-[#522166]">{activeStore}</span>
                     </div>
 
                     <div className="flex items-end gap-2 mb-1">
