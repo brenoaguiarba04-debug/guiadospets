@@ -6,29 +6,46 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.8",
     "@supabase/supabase-js": "^2.90.1",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.36.1",
     "chart.js": "^4.5.1",
     "lucide-react": "^0.562.0",
     "next": "16.1.3",
     "react": "19.2.3",
     "react-chartjs-2": "^5.3.1",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "swr": "^2.3.8",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.3",
+    "jest": "^30.2.0",
+    "jest-environment-jsdom": "^30.2.0",
     "puppeteer": "^24.35.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.6",
     "typescript": "^5"
   }
 }
