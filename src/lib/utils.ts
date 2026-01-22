@@ -15,9 +15,14 @@ export function extrairPesoParaBotao(nome: string): string {
     // REGRA 1: Faixas de peso (Ex: "2 a 4kg", "4.5-10 kg")
     const matchFaixa = n.match(/(\d+[.,]?\d*)\s*(?:a|-|à|ate)\s*(\d+[.,]?\d*)\s*kg/)
     if (matchFaixa) {
-        const p1 = matchFaixa[1].replace(',', '.')
-        const p2 = matchFaixa[2].replace(',', '.')
-        return `${p1}-${p2}kg`
+        const p1 = parseFloat(matchFaixa[1].replace(',', '.'))
+        const p2 = parseFloat(matchFaixa[2].replace(',', '.'))
+        
+        // Proteção contra faixas genéricas do tipo "2 a 60kg" (descrição de linha)
+        // Se a diferença for muito grande, provavelmente não é uma variação específica
+        if (Math.abs(p2 - p1) < 30) { 
+             return `${p1}-${p2}kg`
+        }
     }
 
     // REGRA 2: Peso único em KG (Ex: "15kg", "10 kg")

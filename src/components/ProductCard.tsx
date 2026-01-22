@@ -113,8 +113,8 @@ export default function ProductCard({
                 )}
             </div>
 
-            {/* Content */}
-            <div className="flex-1 flex flex-col">
+            {/* Content Container - Slides up on hover */}
+            <div className="flex-1 flex flex-col transition-transform duration-300 group-hover:-translate-y-12 bg-white z-10">
                 {/* Title */}
                 <h3 className="text-sm font-medium text-gray-800 line-clamp-2 mb-2 min-h-[40px] group-hover:text-[#6b21a8] transition-colors">{activeTitle}</h3>
 
