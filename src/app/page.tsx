@@ -6,6 +6,7 @@ import BrandShowcase from '@/components/BrandShowcase'
 import ProductCard from '@/components/ProductCard'
 import PetloveCategories from '@/components/PetloveCategories'
 import HeroCarousel from '@/components/HeroCarousel'
+import ProductCarousel from '@/components/ProductCarousel'
 import { supabase } from '@/lib/supabase'
 import { definirGrupo, extrairPesoParaBotao, getProdutos, agruparProdutos } from '@/lib/utils'
 import { getFeaturedBrands } from '@/lib/brandData'
@@ -111,6 +112,9 @@ export default async function HomePage({
               title="Marcas em Destaque"
               subtitle="As melhores marcas do mercado pet em um só lugar"
             />
+
+            {/* Quem viu, comprou também */}
+            <ProductCarousel />
           </>
         )}
 

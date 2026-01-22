@@ -1,0 +1,19 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+    <feDropShadow dx="1" dy="1" stdDeviation="0.5" flood-opacity="0.3"/>
+  </filter>
+  <!-- Rotate -25 degrees around center (approx 12,12) to simulate pointer tilt -->
+  <g filter="url(#shadow)" transform="rotate(-25 10 10)">
+    <!-- Main Pad -->
+    <path d="M12 10.5C14.5 10.5 16.5 12.8 16.5 15.5C16.5 18.2 14.5 20.5 12 20.5C9.5 20.5 7.5 18.2 7.5 15.5C7.5 12.8 9.5 10.5 12 10.5Z" fill="#522166" stroke="white" stroke-width="1.5"/>
+    
+    <!-- Toes -->
+    <circle cx="8" cy="8.5" r="2.5" fill="#522166" stroke="white" stroke-width="1.5"/>
+    <circle cx="16" cy="8.5" r="2.5" fill="#522166" stroke="white" stroke-width="1.5"/>
+    <circle cx="12" cy="6" r="2.5" fill="#522166" stroke="white" stroke-width="1.5"/>
+    
+    <!-- Outer Toes -->
+    <circle cx="4.5" cy="11.5" r="2" fill="#522166" stroke="white" stroke-width="1.5"/>
+    <circle cx="19.5" cy="11.5" r="2" fill="#522166" stroke="white" stroke-width="1.5"/>
+  </g>
+</svg>

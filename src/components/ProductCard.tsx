@@ -46,6 +46,7 @@ export default function ProductCard({
 }: ProductCardProps) {
     // State for interactive variants
     const [selectedVariant, setSelectedVariant] = useState<VariantData | null>(null)
+    const [imageError, setImageError] = useState(false)
 
     // Reset selection when title changes (new product loaded in same slot)
     useEffect(() => {
@@ -97,10 +98,18 @@ export default function ProductCard({
 
             {/* Image Area */}
             <div className="relative w-full h-48 mb-4 flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
-                {activeImage ? (
-                    <img src={activeImage} alt={activeTitle} className="max-h-full max-w-full object-contain" />
+                {activeImage && !imageError ? (
+                    <img
+                        src={activeImage}
+                        alt={activeTitle}
+                        className="max-h-full max-w-full object-contain"
+                        onError={() => setImageError(true)}
+                    />
                 ) : (
-                    <div className="w-full h-full bg-gray-100 flex items-center justify-center text-2xl">🐾</div>
+                    <div className="w-full h-full bg-gray-50 rounded-lg flex flex-col items-center justify-center text-gray-300 gap-2">
+                        <span className="text-4xl">🐾</span>
+                        <span className="text-[10px] font-medium">Sem foto</span>
+                    </div>
                 )}
             </div>
 
@@ -182,10 +191,21 @@ export default function ProductCard({
                 </div>
             </div>
 
-            {/* Footer - "Compare" Link */}
-            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+            {/* Footer - "Compare" Link (Visible by default) */}
+            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between group-hover:opacity-0 transition-opacity duration-200">
                 <span className="text-xs text-gray-500">Compare ofertas</span>
-                <span className="text-xs text-[#6b21a8] font-bold group-hover:underline">Ver preços &gt;</span>
+                <span className="text-xs text-[#6b21a8] font-bold">Ver preços &gt;</span>
+            </div>
+
+            {/* Hover Action Button (Slides up) */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-white/95 backdrop-blur-sm border-t border-purple-100">
+                <button className="w-full bg-[#6b21a8] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-[#5a1b8e] transition-colors shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                    </svg>
+                    Ver Ofertas
+                </button>
             </div>
         </Link>
     )

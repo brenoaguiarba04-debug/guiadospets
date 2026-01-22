@@ -27,9 +27,9 @@ export const metadata: Metadata = {
     type: "website",
   },
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png",
-    apple: "/logo.png",
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
   },
 };
 
@@ -44,7 +44,7 @@ export default function RootLayout({
         <head>
           <GoogleAnalytics />
         </head>
-        <body className={`${nunito.variable} ${titanOne.variable} font-sans antialiased bg-white`}>
+        <body className={`${nunito.variable} ${titanOne.variable} font-sans antialiased bg-white pb-20 md:pb-0`}>
           {children}
           <Wishlist />
         </body>
