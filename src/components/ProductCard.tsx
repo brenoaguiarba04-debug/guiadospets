@@ -133,7 +133,7 @@ export default function ProductCard({
                 {/* Variants (Weights) */}
                 {variants && variants.length > 0 && (
                     <div className="flex flex-wrap gap-1 mb-2">
-                        {variants.slice(0, 3).map((variant, i) => {
+                        {variants.slice(0, 10).map((variant, i) => {
                             const isSelected = selectedVariant?.id === variant.id
                             return (
                                 <button
@@ -152,9 +152,9 @@ export default function ProductCard({
                                 </button>
                             )
                         })}
-                        {variants.length > 3 && (
+                        {variants.length > 10 && (
                             <span className="text-[10px] text-gray-500 px-1 py-0.5 self-center">
-                                +{variants.length - 3}
+                                +{variants.length - 10}
                             </span>
                         )}
                     </div>

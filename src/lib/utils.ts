@@ -12,23 +12,23 @@ export function extrairPesoParaBotao(nome: string): string {
 
     const n = nome.toLowerCase()
 
-    // REGRA 1: Faixas de peso (Ex: "2 a 4kg", "4.5-10 kg")
-    const matchFaixa = n.match(/(\d+[.,]?\d*)\s*(?:a|-|à|ate)\s*(\d+[.,]?\d*)\s*kg/)
+    // REGRA 1: Faixas de peso (Ex: "2 a 4kg", "4.5-10 kg", "10.1kg a 25kg")
+    const matchFaixa = n.match(/(\d+[.,]?\d*)\s*(?:a|-|à|ate|té)\s*(\d+[.,]?\d*)\s*kg/)
     if (matchFaixa) {
         const p1 = parseFloat(matchFaixa[1].replace(',', '.'))
         const p2 = parseFloat(matchFaixa[2].replace(',', '.'))
-        
-        // Proteção contra faixas genéricas do tipo "2 a 60kg" (descrição de linha)
-        // Se a diferença for muito grande, provavelmente não é uma variação específica
-        if (Math.abs(p2 - p1) < 30) { 
-             return `${p1}-${p2}kg`
+
+        // Aumentado o limite de diferença de peso para capturar faixas maiores como 30-60kg
+        if (Math.abs(p2 - p1) < 60) {
+            return `${p1}-${p2}kg`
         }
     }
 
-    // REGRA 2: Peso único em KG (Ex: "15kg", "10 kg")
+    // REGRA 2: Peso único em KG (Ex: "15kg", "10 kg", "10.1kg")
     const matchKg = n.match(/(\d+[.,]?\d*)\s*kg/)
     if (matchKg) {
-        return `${matchKg[1].replace(',', '.')}kg`
+        const peso = matchKg[1].replace(',', '.')
+        return `${peso}kg`
     }
 
     // REGRA 3: Quantidade (Unidades/Tabletes)
@@ -144,7 +144,12 @@ export function definirGrupo(nome: string): string {
         // Improved regex to catch "3 tabletes", "c/3", "cx 3", "3un", "3 un", "3 unidades", "3 doses"
         const is3Pack = /(?:3\s*(?:uni|tab|comp|dos|caps)|cx\s*3|pack\s*3|c\/\s*3|c\/3)/i.test(n)
         const qtd = is3Pack ? "3 Comp." : "1 Comp."
-        return `NexGard ${tipo} ${qtd}`.trim()
+
+        // Normalização extra para Nexgard: Garante que todos Nexgard Spectra Cães caiam no mesmo grupo
+        if (tipo === "Spectra") {
+            return `NexGard Spectra ${qtd}`
+        }
+        return `NexGard ${qtd}`.trim()
     }
 
     if (n.includes('bravecto')) {

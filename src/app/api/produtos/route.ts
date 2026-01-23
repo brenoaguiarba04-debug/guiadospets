@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase-admin'
+
 
 // Força renderização dinâmica
 export const dynamic = 'force-dynamic'
@@ -37,7 +39,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Cria o produto
-        const { data: produto, error: produtoError } = await supabase
+        const { data: produto, error: produtoError } = await supabaseAdmin
             .from('produtos')
             .insert({
                 nome,
@@ -54,7 +56,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Cria o preço
-        const { error: precoError } = await supabase
+        const { error: precoError } = await supabaseAdmin
             .from('precos')
             .insert({
                 produto_id: produto.id,
@@ -66,7 +68,7 @@ export async function POST(request: NextRequest) {
 
         if (precoError) {
             // Rollback - exclui o produto se não conseguiu criar o preço
-            await supabase.from('produtos').delete().eq('id', produto.id)
+            await supabaseAdmin.from('produtos').delete().eq('id', produto.id)
             return NextResponse.json({ message: precoError.message }, { status: 500 })
         }
 
@@ -93,10 +95,10 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Exclui preços primeiro (cascade)
-    await supabase.from('precos').delete().eq('produto_id', parseInt(id))
+    await supabaseAdmin.from('precos').delete().eq('produto_id', parseInt(id))
 
     // Exclui produto
-    const { error } = await supabase.from('produtos').delete().eq('id', parseInt(id))
+    const { error } = await supabaseAdmin.from('produtos').delete().eq('id', parseInt(id))
 
     if (error) {
         return NextResponse.json({ message: error.message }, { status: 500 })
