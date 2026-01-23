@@ -1,38 +1,67 @@
+import sys
+sys.stdout.reconfigure(encoding='utf-8')
 import requests
 from collections import defaultdict
 import re
 
-# Replicando a lógica do utils.ts (simplificada para Python)
-def extrair_peso(nome):
-    n = nome.lower()
-    match_kg = re.search(r'(\d+[.,]?\d*)\s*kg', n)
-    if match_kg: return f"{match_kg.group(1).replace(',', '.')}kg"
-    
-    match_mg = re.search(r'(\d+)\s*mg', n)
-    if match_mg: return f"{match_mg.group(1)}mg"
-    
-    return "Ver"
+# ==========================================
+# LÓGICA REPLICADA DE: src/lib/utils.ts
+# ==========================================
 
 def definir_grupo(nome):
-    if not nome: return "Sem Nome"
+    if not nome: return "Produto Sem Nome"
     n = nome.lower()
 
-    # Lógica de Marcas Específicas (Replicando utils.ts)
+    # Espécie
+    especie = ''
+    if any(x in n for x in ['gato', 'felino', 'cat ', 'feline']): especie = 'Gatos'
+    elif any(x in n for x in ['cão', 'cães', 'cachorro', 'dog', 'canino']): especie = 'Cães'
+
+    # Fase
+    fase = ''
+    if any(x in n for x in ['filhote', 'puppy', 'kitten', 'junior']): fase = 'Filhotes'
+    elif any(x in n for x in ['senior', 'idoso', '7+', 'mature']): fase = 'Sênior'
+    elif any(x in n for x in ['castrado', 'sterili']): fase = 'Castrados'
+    elif any(x in n for x in ['light', 'obeso', 'peso']): fase = 'Light'
+    elif 'adult' in n: fase = 'Adultos'
+
+    # Porte (cães)
+    porte = ''
+    if any(x in n for x in ['pequeno', 'small', 'mini', 'toy']): porte = 'Peq.'
+    elif any(x in n for x in ['médio', 'medio', 'medium']): porte = 'Méd.'
+    elif any(x in n for x in ['gigante', 'giant', 'maxi']): porte = 'Gig.'
+    elif any(x in n for x in ['grande', 'large']): porte = 'Gde.'
+
+    # Sabor
+    sabor = ''
+    sabores_map = {
+        'frango': 'Frango', 'carne': 'Carne', 'salmão': 'Salmão', 'salmon': 'Salmão',
+        'cordeiro': 'Cordeiro', 'peru': 'Peru', 'peixe': 'Peixe', 'vegetal': 'Vegetais',
+        'arroz': 'Arroz'
+    }
+    for k, v in sabores_map.items():
+        if k in n:
+            sabor = v
+            break
+
+    # === MARCAS ===
+
     if 'nexgard' in n:
         tipo = "Spectra" if 'spectra' in n else ""
-        qtd = "3 Comp." if re.search(r'(?:3\s*uni|3\s*tab|3\s*comp|cx\s*3|pack\s*3)', n) else "1 Comp."
+        is3Pack = bool(re.search(r'(?:3\s*(?:uni|tab|comp|dos|caps)|cx\s*3|pack\s*3|c\/\s*3|c\/3)', n))
+        qtd = "3 Comp." if is3Pack else "1 Comp."
         return f"NexGard {tipo} {qtd}".strip()
 
     if 'bravecto' in n:
         tipo = "Transdermal" if any(x in n for x in ['transdermal', 'pipeta', 'topico']) else "Mastigável"
-        especie = "Cães" if any(x in n for x in ['cão', 'cães', 'cachorro', 'dog']) else ("Gatos" if any(x in n for x in ['gato', 'felino']) else "")
         animal = f"para {especie}" if especie else ""
         return f"Bravecto {tipo} {animal}".strip()
-    
+
     if 'simparic' in n:
-        qtd = "3 Comp." if re.search(r'(?:3\s*uni|3\s*tab|3\s*comp)', n) else "1 Comp."
-        return f"Simparic {qtd}".strip()
-        
+        is3Pack = bool(re.search(r'(?:3\s*(?:uni|tab|comp|dos|caps)|cx\s*3|pack\s*3|c\/\s*3|c\/3)', n))
+        qtd = "3 Comp." if is3Pack else "1 Comp."
+        return f"Simparic {qtd}"
+
     if 'golden' in n:
         linha = ''
         if 'special' in n: linha = 'Special'
@@ -40,17 +69,29 @@ def definir_grupo(nome):
         elif 'selecao' in n or 'seleção' in n: linha = 'Seleção Natural'
         elif 'mega' in n: linha = 'Mega'
         
-        # Simplificação: Não vou replicar toda a lógica de sabor/porte aqui, 
-        # mas o suficiente para ver se agrupa o principal
-        return f"Ração Golden {linha}".strip()
+        partes = ['Ração Golden', linha, sabor, fase, porte, f"para {especie}" if especie else '']
+        return ' '.join([p for p in partes if p])
 
-    # Fallback genérico
-    nome_grupo = re.sub(r'\d+[.,]?\d*\s*kg', '', nome, flags=re.IGNORECASE)
-    nome_grupo = re.sub(r'\d+[.,]?\d*\s*g\b', '', nome_grupo, flags=re.IGNORECASE)
-    nome_grupo = re.sub(r'\s+', ' ', nome_grupo).strip()
-    return nome_grupo
+    if 'premier' in n:
+        linha = ''
+        if 'formula' in n or 'fórmula' in n: linha = 'Fórmula'
+        elif 'especifica' in n or 'raça' in n: linha = 'Raças Específicas'
+        elif 'nattu' in n: linha = 'Nattu'
+        elif 'cookie' in n: linha = 'Cookie'
+        
+        partes = ['Ração Premier', linha, sabor, fase, porte, f"para {especie}" if especie else '']
+        return ' '.join([p for p in partes if p])
 
-# Config Supabase
+    # Fallback básico
+    nome_grupo = n
+    nome_grupo = re.sub(r'\d+[.,]?\d*\s*kg', '', nome_grupo)
+    nome_grupo = re.sub(r'\d+[.,]?\d*\s*g\b', '', nome_grupo)
+    return nome_grupo.strip().title()
+
+# ==========================================
+# END LOGIC REPLICATION
+# ==========================================
+
 SUPABASE_URL = "https://wgyosfpkctbpeoyxddec.supabase.co"
 SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndneW9zZnBrY3RicGVveXhkZGVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2MTMzMTEsImV4cCI6MjA4NDE4OTMxMX0.uQhOqsiVj2JUEjSyIBT5x1wzEMNIzHBzWk5m4L8XX8w"
 
@@ -60,54 +101,78 @@ headers = {
 }
 
 def analyze():
-    print("🔍 Baixando produtos...")
-    resp = requests.get(f"{SUPABASE_URL}/rest/v1/produtos?select=nome", headers=headers)
-    products = resp.json()
+    print("🔍 Baixando produtos para análise...")
+    offset = 0
+    limit = 1000
+    products = []
+    
+    while True:
+        resp = requests.get(f"{SUPABASE_URL}/rest/v1/produtos?select=nome&offset={offset}&limit={limit}", headers=headers)
+        if resp.status_code != 200: break
+        data = resp.json()
+        if not data: break
+        products.extend(data)
+        offset += limit
+
+    print(f"✅ {len(products)} produtos baixados.")
     
     grupos = defaultdict(list)
-    
     for p in products:
         nome = p['nome']
-        grupo = definir_grupo(nome)
-        grupos[grupo].append(nome)
-        
-    with open("grouping_analysis_utf8.txt", "w", encoding="utf-8") as f:
-        f.write(f"📊 Análise de Agrupamento ({len(products)} produtos -> {len(grupos)} grupos)\n")
-        f.write("-" * 50 + "\n")
-        
-        # Verificar grupos que "parecem" duplicados
-        grupos_sorted = sorted(grupos.keys())
-        
-        possiveis_falhas = []
-        
-        for i in range(len(grupos_sorted) - 1):
-            g1 = grupos_sorted[i]
-            g2 = grupos_sorted[i+1]
-            
-            # Se os nomes dos grupos forem muito parecidos
-            if g1 in g2 or g2 in g1: # Check simples de substring
-                 possiveis_falhas.append((g1, g2))
-                 
-        # Verificar grupos com apenas 1 item (pode indicar falha se deveria estar agrupado)
-        singles = [g for g, itens in grupos.items() if len(itens) == 1]
-        
-        f.write(f"🔸 Grupos com apenas 1 variação: {len(singles)} (Pode ser normal ou falha)\n")
-        f.write(f"🔸 Possíveis duplicações de grupo (nomes parecidos): {len(possiveis_falhas)}\n")
-        
-        if possiveis_falhas:
-            f.write("\n⚠️  Exemplos de possíveis falhas de agrupamento:\n")
-            for g1, g2 in possiveis_falhas[:10]:
-                f.write(f"   - '{g1}' vs '{g2}'\n")
-                f.write(f"     (Ex: {grupos[g1][0]} vs {grupos[g2][0]})\n")
-                
-        f.write("\n✅ Exemplos de Sucesso:\n")
-        multi_groups = {k:v for k,v in grupos.items() if len(v) > 1}
-        for k in list(multi_groups.keys())[:5]:
-            f.write(f"   - {k}: {len(multi_groups[k])} variações\n")
+        g = definir_grupo(nome)
+        grupos[g].append(nome)
+
+    # Análise de Grupos suspeitos (Heterogêneos)
+    print("\n🧐 Analisando consistência dos grupos...")
     
-    print("Report written to grouping_analysis_utf8.txt")
+    suspicious_groups = []
+    
+    for g_nome, items in grupos.items():
+        if len(items) < 2: continue
+        
+        # Heurística: Se um grupo tem itens muito diferentes entre si
+        # Ex: "Ração X" e "Shampoo X" (improvável com a lógica atual, mas possível)
+        # Ou marcas diferentes
+        
+        first = items[0].lower()
+        if 'cão' in first:
+            if any('gato' in x.lower() for x in items):
+                suspicious_groups.append((g_nome, "Mistura Cão/Gato", items))
+                continue
+                
+        if 'ração' in first:
+            if any('shampoo' in x.lower() or 'brinquedo' in x.lower() for x in items):
+                suspicious_groups.append((g_nome, "Mistura Tipo Produto", items))
+                continue
+
+    # Gerar Relatório Visual
+    with open("grouping_report.txt", "w", encoding="utf-8") as f:
+        f.write("📊 RELATÓRIO DE AGRUPAMENTO\n")
+        f.write("="*50 + "\n\n")
+        
+        if suspicious_groups:
+            f.write(f"⚠️  GRUPOS SUSPEITOS ({len(suspicious_groups)}):\n")
+            for g, motivo, items in suspicious_groups:
+                f.write(f"\n📛 Grupo: [{g}] ({motivo})\n")
+                for i in items[:5]:
+                    f.write(f"   - {i}\n")
+                if len(items) > 5: f.write("   ...\n")
+        else:
+            f.write("✅ Nenhum erro óbvio de mistura de espécies ou tipos encontrado.\n\n")
+            
+        f.write("🔍 AMOSTRA DE GRUPOS (Para validação visual):\n")
+        sorted_groups = sorted(grupos.items(), key=lambda x: len(x[1]), reverse=True)
+        
+        for g, items in sorted_groups[:20]:
+            f.write(f"\n📂 Grupo: [{g}] ({len(items)} itens)\n")
+            # Mostrar itens únicos para facilitar leitura
+            unique_items = sorted(list(set(items)))
+            for i in unique_items[:10]:
+                f.write(f"   - {i}\n")
+            if len(unique_items) > 10:
+                f.write(f"   ... (+{len(unique_items)-10})\n")
+
+    print("\n✅ Relatório gerado em 'grouping_report.txt'. Leia este arquivo para ver os exemplos.")
 
 if __name__ == "__main__":
-    import sys
-    sys.stdout.reconfigure(encoding='utf-8')
     analyze()

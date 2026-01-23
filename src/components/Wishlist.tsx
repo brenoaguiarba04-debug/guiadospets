@@ -17,12 +17,13 @@ export default function Wishlist() {
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         setMounted(true)
         // Carrega do localStorage
         const saved = localStorage.getItem('guiadopet_wishlist')
         if (saved) {
             try {
-                setItems(JSON.parse(saved))
+                setItems(JSON.parse(saved) as WishlistItem[])
             } catch {
                 setItems([])
             }
@@ -32,7 +33,7 @@ export default function Wishlist() {
         const handleUpdate = () => {
             const saved = localStorage.getItem('guiadopet_wishlist')
             if (saved) {
-                setItems(JSON.parse(saved))
+                setItems(JSON.parse(saved) as WishlistItem[])
             } else {
                 setItems([])
             }
