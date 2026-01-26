@@ -8,11 +8,11 @@ import PetloveCategories from '@/components/PetloveCategories'
 import HeroCarousel from '@/components/HeroCarousel'
 import ProductCarousel from '@/components/ProductCarousel'
 import { supabase } from '@/lib/supabase'
-import { definirGrupo, extrairPesoParaBotao, getProdutos, agruparProdutos } from '@/lib/utils'
+import { definirGrupo, extrairPesoParaBotao, getProdutos, getCachedProdutos, agruparProdutos } from '@/lib/utils'
 import { getFeaturedBrands } from '@/lib/brandData'
 
-// Força renderização dinâmica
-export const dynamic = 'force-dynamic'
+// Força renderização dinâmica APENAS se necessário, mas queremos cache por padrão agora
+// export const dynamic = 'force-dynamic' 
 
 interface SearchParams {
   q?: string
@@ -25,7 +25,11 @@ export default async function HomePage({
 }) {
   const params = await searchParams
   const searchTerm = params?.q || ''
-  const produtos = await getProdutos(searchTerm)
+
+  // Use cached version for default view (no search), dynamic for search results
+  const produtos = searchTerm
+    ? await getProdutos(searchTerm)
+    : await getCachedProdutos()
   const grupos = agruparProdutos(produtos)
 
   return (

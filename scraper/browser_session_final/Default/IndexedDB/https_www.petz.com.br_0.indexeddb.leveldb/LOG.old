@@ -1,0 +1,14 @@
+2026/01/25-01:19:06.650 5bc0 Reusing MANIFEST C:\Users\breno\Downloads\backup_site-20260116T230646Z-3-001\guiadopet-nextjs\scraper\browser_session_final\Default\IndexedDB\https_www.petz.com.br_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/25-01:19:06.651 5bc0 Recovering log #26
+2026/01/25-01:19:06.651 5bc0 Reusing old log C:\Users\breno\Downloads\backup_site-20260116T230646Z-3-001\guiadopet-nextjs\scraper\browser_session_final\Default\IndexedDB\https_www.petz.com.br_0.indexeddb.leveldb/000026.log 
+2026/01/25-01:19:06.651 5bc0 Delete type=2 #24
+2026/01/25-01:19:06.668 3a68 Level-0 table #31: started
+2026/01/25-01:19:06.671 3a68 Level-0 table #31: 4238 bytes OK
+2026/01/25-01:19:06.672 3a68 Delete type=0 #26
+2026/01/25-01:19:06.672 5bc0 Manual compaction at level-0 from '\x00\x0e\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x0f\x00\x00\x00' @ 0 : 0; will stop at '\x00\x0e\x00\x00\x05' @ 1626 : 1
+2026/01/25-01:19:06.673 5bc0 Compacting 1@0 + 1@1 files
+2026/01/25-01:19:06.683 5bc0 Generated table #32@0: 94 keys, 2086 bytes
+2026/01/25-01:19:06.683 5bc0 Compacted 1@0 + 1@1 files => 2086 bytes
+2026/01/25-01:19:06.684 5bc0 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/01/25-01:19:06.684 5bc0 Delete type=2 #31
+2026/01/25-01:19:06.685 5bc0 Manual compaction at level-0 from '\x00\x0e\x00\x00\x05' @ 1626 : 1 .. '\x00\x0f\x00\x00\x00' @ 0 : 0; will stop at (end)

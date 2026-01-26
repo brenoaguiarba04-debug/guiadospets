@@ -31,3 +31,20 @@ Thumbs.db
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Temporary Scraper/Debug Files
+*.log
+*.png
+*.txt
+*.html
+audit_report.json
+ml_*.json
+storage/
+challenge_output.txt
+mass_update_list.json
+
+# Agent Metadata
+.agent/
+.agents/
+.gemini/
+.opencode/

@@ -1,0 +1,5 @@
+2026/01/25-01:07:38.451 3390 Reusing MANIFEST C:\Users\breno\Downloads\backup_site-20260116T230646Z-3-001\guiadopet-nextjs\scraper\browser_session\Default\IndexedDB\https_www.petz.com.br_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/25-01:07:38.451 3390 Recovering log #462
+2026/01/25-01:07:38.452 3390 Reusing old log C:\Users\breno\Downloads\backup_site-20260116T230646Z-3-001\guiadopet-nextjs\scraper\browser_session\Default\IndexedDB\https_www.petz.com.br_0.indexeddb.leveldb/000462.log 
+2026/01/25-01:07:38.452 3390 Delete type=2 #460
+2026/01/25-01:07:38.484 47a4 Manual compaction at level-0 from '\x00\x83\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x84\x00\x00\x00' @ 0 : 0; will stop at (end)

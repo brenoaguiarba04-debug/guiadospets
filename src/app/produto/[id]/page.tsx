@@ -148,17 +148,11 @@ export default async function ProdutoPage({ params }: PageProps) {
     // 5. Extrair variações (se houver)
     const variacoes = grupoAtual?.variacoes || []
 
-    // Deduplicar ofertas por loja (mantém a de menor preço)
+    // Deduplicar ofertas por loja (mantém a mais RECENTE para garantir que o preço seja o atual)
     const uniqueOffers = Object.values(
         precos.reduce((acc, current) => {
-            // Se já existe oferta dessa loja
-            if (acc[current.loja]) {
-                // Mantém a que tiver menor preço
-                if (current.preco < acc[current.loja].preco) {
-                    acc[current.loja] = current
-                }
-            } else {
-                // Se não existe, adiciona
+            const existing = acc[current.loja]
+            if (!existing || (new Date(current.ultima_atualizacao || 0) > new Date(existing.ultima_atualizacao || 0))) {
                 acc[current.loja] = current
             }
             return acc

@@ -1,48 +1,65 @@
 @import "tailwindcss";
 
 :root {
-  --pet-purple: #522166;
-  --pet-purple-hover: #3e194d;
-  --pet-yellow: #ffd000;
-  --pet-yellow-hover: #e6bc00;
-  --pet-text: #333333;
-  --pet-bg: #f5f5f5;
+  /* Soft Pop Palette */
+  --pet-purple: #6b21a8;
+  --pet-purple-light: #d8b4fe;
+  --pet-purple-hover: #581c87;
+
+  --pet-yellow: #facc15;
+  --pet-yellow-light: #fef08a;
+
+  --pet-pink: #f472b6;
+  --pet-pink-light: #fbcfe8;
+
+  --pet-text: #1f2937;
+  --pet-bg: #fdfbff;
+  /* Slight purple tint white */
   --pet-white: #ffffff;
 }
 
 body {
   font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f5f5f5;
+  background-color: var(--pet-bg);
+  background-image:
+    radial-gradient(circle at 0% 0%, rgba(216, 180, 254, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(250, 204, 21, 0.1) 0%, transparent 50%);
+  /* background-attachment: fixed; -> Removed for performance */
   color: var(--pet-text);
   cursor: url("/cursor-purple.svg") 0 0, auto;
-  /* Custom Purple Arrow Cursor */
 }
 
 a,
 button {
   cursor: url("/cursor-purple.svg") 0 0, pointer;
-  /* Ensure links also show the purple arrow */
+}
+
+/* Custom Selection */
+::selection {
+  background-color: var(--pet-purple-light);
+  color: var(--pet-purple);
 }
 
 /* Scrollbar personalizada */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c4c4c4;
-  border-radius: 4px;
+  background: #e9d5ff;
+  border-radius: 99px;
+  border: 2px solid var(--pet-bg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+  background: #d8b4fe;
 }
 
-/* Hide scrollbar utility */
+/* Utilities */
 .scrollbar-hide::-webkit-scrollbar {
   display: none !important;
 }
@@ -50,4 +67,31 @@ button {
 .scrollbar-hide {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
+}
+
+/* Glassmorphism Utility Class - Optimized */
+.glass {
+  background: rgba(255, 255, 255, 0.85);
+  /* More opaque */
+  backdrop-filter: blur(5px);
+  /* Reduced blur */
+  -webkit-backdrop-filter: blur(5px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Animations */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
 }

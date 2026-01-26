@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { unstable_cache } from 'next/cache'
 
 /**
  * Funções utilitárias migradas do Flask para Next.js
@@ -437,6 +438,15 @@ export async function getProdutos(searchTerm?: string) {
 
     return data || []
 }
+
+export const getCachedProdutos = unstable_cache(
+    async () => getProdutos(),
+    ['produtos-cache-key'],
+    {
+        revalidate: 3600, // 1 hour
+        tags: ['produtos']
+    }
+)
 
 export function agruparProdutos(produtos: any[]) {
     const grupos: Record<string, Grupo> = {}

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import ProductCard from './ProductCard'
 import PetFilter from './PetFilter'
-import { filtrarProdutosPorPet, extrairPesoKg, calcularPrecoPorKg, type FiltroPet } from '@/lib/pet-utils'
+import { extrairPesoKg, calcularPrecoPorKg, type FiltroPet } from '@/lib/pet-utils'
 
 interface Variacao {
     id: number
@@ -33,7 +33,6 @@ export default function HomeContent({ grupos, searchTerm }: HomeContentProps) {
         if (!filtroPet) return grupos
 
         return grupos.filter(grupo => {
-            // Verifica se o nome principal corresponde ao filtro
             const nome = grupo.nomePrincipal.toLowerCase()
 
             // Tipo de pet
@@ -71,6 +70,15 @@ export default function HomeContent({ grupos, searchTerm }: HomeContentProps) {
         })
     }, [grupos, filtroPet])
 
+    // Paginação simples
+    const ITEMS_PER_PAGE = 24
+    const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
+
+    // Reset paginação quando mudar filtros
+    useEffect(() => {
+        setVisibleCount(ITEMS_PER_PAGE)
+    }, [filtroPet, searchTerm])
+
     // Adiciona preço por kg aos grupos
     const gruposComPrecoPorKg = useMemo(() => {
         return gruposFiltrados.map(grupo => {
@@ -83,6 +91,9 @@ export default function HomeContent({ grupos, searchTerm }: HomeContentProps) {
             }
         })
     }, [gruposFiltrados])
+
+    const gruposVisiveis = gruposComPrecoPorKg.slice(0, visibleCount)
+    const temMais = visibleCount < gruposComPrecoPorKg.length
 
     return (
         <div className="space-y-8">
@@ -118,21 +129,35 @@ export default function HomeContent({ grupos, searchTerm }: HomeContentProps) {
 
             {/* Grid de Produtos */}
             {gruposComPrecoPorKg.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {gruposComPrecoPorKg.map((grupo) => (
-                        <ProductCard
-                            key={grupo.nomePrincipal}
-                            id={grupo.variacoes[0]?.id}
-                            title={grupo.nomePrincipal}
-                            image={grupo.imagemCapa}
-                            price={grupo.menorPrecoCapa}
-                            slug={`ofertas?q=${encodeURIComponent(grupo.nomePrincipal)}`}
-                            rating={4.8}
-                            reviews={Math.floor(Math.random() * 500) + 50}
-                            variants={grupo.variacoes}
-                        />
-                    ))}
-                </div>
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {gruposVisiveis.map((grupo) => (
+                            <ProductCard
+                                key={grupo.nomePrincipal}
+                                id={grupo.variacoes[0]?.id}
+                                title={grupo.nomePrincipal}
+                                image={grupo.imagemCapa}
+                                price={grupo.menorPrecoCapa}
+                                slug={`ofertas?q=${encodeURIComponent(grupo.nomePrincipal)}`}
+                                rating={4.8}
+                                reviews={120} // Static or valid data, avoid Math.random() in render loop
+                                variants={grupo.variacoes}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Load More Button */}
+                    {temMais && (
+                        <div className="flex justify-center pt-8 pb-12">
+                            <button
+                                onClick={() => setVisibleCount(prev => prev + ITEMS_PER_PAGE)}
+                                className="bg-white border-2 border-purple-600 text-purple-700 font-bold py-3 px-8 rounded-full hover:bg-purple-600 hover:text-white transition-all shadow-sm hover:shadow-lg transform hover:-translate-y-1"
+                            >
+                                Ver mais produtos ({gruposComPrecoPorKg.length - visibleCount} restantes)
+                            </button>
+                        </div>
+                    )}
+                </>
             ) : (
                 <div className="text-center py-16">
                     <div className="text-6xl mb-4">🔍</div>

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function HeroCarousel() {
     const [currentSlide, setCurrentSlide] = useState(0)
@@ -10,143 +10,148 @@ export default function HeroCarousel() {
     const slides = [
         {
             id: 1,
-            content: (
-                <div className="relative bg-gradient-to-r from-[#6b21a8] via-[#7c3aed] to-[#a855f7] rounded-3xl overflow-hidden shadow-xl w-full h-[320px] sm:h-[400px] flex items-center">
-                    {/* Decorative Elements */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl"></div>
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-900/30 rounded-full translate-y-1/2 -translate-x-1/3 blur-2xl"></div>
-
-                    <div className="relative z-10 px-8 sm:px-16 flex flex-col lg:flex-row items-center justify-between w-full gap-4">
-                        <div className="max-w-xl text-left">
-                            <span className="inline-block px-4 py-1.5 bg-yellow-400 text-yellow-900 text-sm font-bold rounded-full mb-4 shadow-lg">
-                                🔥 Compare e Economize
-                            </span>
-                            <h2 className="text-3xl sm:text-5xl font-extrabold text-white mb-4 leading-tight">
-                                Encontre o <span className="text-yellow-300">melhor preço</span> para seu pet
-                            </h2>
-                            <p className="text-purple-100 text-lg mb-8 max-w-lg hidden sm:block">
-                                Compare preços de rações e medicamentos em Petz, Cobasi, Petlove e mais.
-                            </p>
-                            <div className="flex flex-wrap gap-4">
-                                <Link href="/categoria/racoes" className="px-6 py-3 bg-white text-purple-700 font-bold rounded-full hover:bg-yellow-300 hover:text-purple-900 transition-all shadow-lg text-sm sm:text-base">
-                                    Comparar Preços
-                                </Link>
-                            </div>
-                        </div>
-
-                        <div className="hidden lg:block relative -mr-10">
-                            <img
-                                src="/—Pngtree—dog and cat white backgroud_13489516.png"
-                                alt="Cachorro e gato"
-                                className="w-[450px] h-[450px] object-contain drop-shadow-2xl transform scale-110 translate-y-6"
-                            />
-                        </div>
-                    </div>
-                </div>
-            )
+            bg: "bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-500",
+            title: (
+                <>
+                    Encontre o <span className="text-yellow-300 relative inline-block">
+                        melhor preço
+                        <svg className="absolute -bottom-2 left-0 w-full h-3 text-yellow-300" viewBox="0 0 100 10" preserveAspectRatio="none">
+                            <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="3" fill="none" />
+                        </svg>
+                    </span> para seu pet
+                </>
+            ),
+            subtitle: "Compare preços de rações e medicamentos em Petz, Cobasi, Petlove e mais.",
+            image: "/—Pngtree—dog and cat white backgroud_13489516.png",
+            badge: "🔥 Compare e Economize",
+            btnText: "Comparar Preços",
+            btnLink: "/categoria/racoes",
+            decor: "🐶"
         },
         {
             id: 2,
-            content: (
-                <div className="relative bg-gradient-to-r from-[#0ea5e9] to-[#2563eb] rounded-3xl overflow-hidden shadow-xl w-full h-[320px] sm:h-[400px] flex items-center">
-                    {/* Decorative Circles */}
-                    <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[radial-gradient(circle_at_50%_120%,#fff_0%,transparent_50%)]"></div>
-                    <div className="absolute top-10 right-10 text-white/10 text-9xl font-black rotate-12">💊</div>
-
-                    <div className="relative z-10 px-8 sm:px-16 flex flex-col items-start justify-center w-full max-w-2xl">
-                        <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md text-white border border-white/30 text-sm font-bold rounded-full mb-4 shadow-sm">
-                            🏥 Saúde e Bem-estar
-                        </span>
-                        <h2 className="text-3xl sm:text-5xl font-extrabold text-white mb-4 leading-tight">
-                            Farmácia Veterinária<br />com <span className="text-cyan-300">Preço Baixo</span>
-                        </h2>
-                        <p className="text-blue-100 text-lg mb-8 max-w-lg hidden sm:block">
-                            Encontre antipulgas, vermífugos e medicamentos essenciais para proteger seu pet gastando menos.
-                        </p>
-                        <Link href="/categoria/medicamentos" className="px-8 py-3.5 bg-white text-blue-600 font-bold rounded-full hover:bg-cyan-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
-                            Ver Medicamentos
-                        </Link>
-                    </div>
-                </div>
-            )
+            bg: "bg-gradient-to-br from-blue-500 via-sky-500 to-cyan-400",
+            title: (
+                <>
+                    Farmácia Veterinária com <span className="text-white bg-blue-600/30 px-2 rounded-lg backdrop-blur-sm">Preço Baixo</span>
+                </>
+            ),
+            subtitle: "Encontre antipulgas, vermífugos e medicamentos essenciais para proteger seu pet.",
+            image: null, // Placeholder logic or add image if available
+            badge: "🏥 Saúde e Bem-estar",
+            btnText: "Ver Medicamentos",
+            btnLink: "/categoria/medicamentos",
+            decor: "💊"
         },
         {
             id: 3,
-            content: (
-                <div className="relative bg-gradient-to-r from-[#f43f5e] to-[#e11d48] rounded-3xl overflow-hidden shadow-xl w-full h-[320px] sm:h-[400px] flex items-center">
-                    <div className="absolute top-0 right-0 w-full h-full opacity-10 bg-[radial-gradient(ellipse_at_top_right,#fff_0%,transparent_70%)]"></div>
-                    <div className="absolute bottom-4 right-10 text-white/10 text-9xl font-black -rotate-12">🎾</div>
-
-                    <div className="relative z-10 px-8 sm:px-16 flex flex-col items-start justify-center w-full max-w-2xl">
-                        <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md text-white border border-white/30 text-sm font-bold rounded-full mb-4 shadow-sm">
-                            🧶 Diversão Garantida
-                        </span>
-                        <h2 className="text-3xl sm:text-5xl font-extrabold text-white mb-4 leading-tight">
-                            Brinquedos e<br /><span className="text-pink-200">Acessórios Fofos</span>
-                        </h2>
-                        <p className="text-rose-100 text-lg mb-8 max-w-lg hidden sm:block">
-                            As melhores caminhas, arranhadores e brinquedos para manter seu pet feliz e ativo.
-                        </p>
-                        <Link href="/categoria/brinquedos" className="px-8 py-3.5 bg-white text-rose-600 font-bold rounded-full hover:bg-rose-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
-                            Mimar meu Pet
-                        </Link>
-                    </div>
-                </div>
-            )
+            bg: "bg-gradient-to-br from-pink-500 via-rose-500 to-red-400",
+            title: (
+                <>
+                    Brinquedos e <span className="text-pink-200 font-serif italic">Acessórios Fofos</span>
+                </>
+            ),
+            subtitle: "As melhores caminhas, arranhadores e brinquedos para manter seu pet feliz.",
+            image: null,
+            badge: "🧶 Diversão Garantida",
+            btnText: "Mimar meu Pet",
+            btnLink: "/categoria/brinquedos",
+            decor: "🎾"
         },
         {
             id: 4,
-            content: (
-                <div className="relative bg-gradient-to-r from-[#10b981] to-[#059669] rounded-3xl overflow-hidden shadow-xl w-full h-[320px] sm:h-[400px] flex items-center">
-                    <div className="absolute top-0 left-0 w-full h-full opacity-20 bg-[linear-gradient(45deg,transparent_25%,#fff_25%,#fff_50%,transparent_50%,transparent_75%,#fff_75%,#fff_100%)] bg-[length:20px_20px]"></div>
-                    <div className="absolute top-1/2 right-20 text-white/10 text-9xl font-black -translate-y-1/2">🏷️</div>
-
-                    <div className="relative z-10 px-8 sm:px-16 flex flex-col items-start justify-center w-full max-w-2xl">
-                        <span className="px-4 py-1.5 bg-yellow-400 text-green-900 text-sm font-bold rounded-full mb-4 shadow-lg">
-                            💰 Economia Real
-                        </span>
-                        <h2 className="text-3xl sm:text-5xl font-extrabold text-white mb-4 leading-tight">
-                            Ofertas Relâmpago<br /><span className="text-green-200">Até 50% OFF</span>
-                        </h2>
-                        <p className="text-green-50 text-lg mb-8 max-w-lg hidden sm:block">
-                            Seleção diária dos produtos com os maiores descontos da internet. Aproveite antes que acabe!
-                        </p>
-                        <Link href="/ofertas" className="px-8 py-3.5 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1">
-                            Ver Promoções
-                        </Link>
-                    </div>
-                </div>
-            )
+            bg: "bg-gradient-to-br from-emerald-500 via-green-500 to-teal-400",
+            title: (
+                <>
+                    Ofertas Relâmpago <br /><span className="text-yellow-300">Até 50% OFF</span>
+                </>
+            ),
+            subtitle: "Seleção diária dos produtos com os maiores descontos da internet. Aproveite!",
+            image: null,
+            badge: "💰 Economia Real",
+            btnText: "Ver Promoções",
+            btnLink: "/ofertas",
+            decor: "🏷️"
         }
     ]
 
-    const nextSlide = () => {
-        setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
-    }
+    const nextSlide = () => setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
+    const prevSlide = () => setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
 
-    const prevSlide = () => {
-        setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
-    }
-
-    // Auto-slide every 5 seconds
     useEffect(() => {
-        const timer = setInterval(() => {
-            nextSlide()
-        }, 8000)
+        const timer = setInterval(nextSlide, 6000)
         return () => clearInterval(timer)
     }, [])
 
     return (
-        <div className="relative w-full max-w-7xl mx-auto px-4 group">
-            <div className="overflow-hidden rounded-3xl">
-                <div
-                    className="flex transition-transform duration-500 ease-in-out"
-                    style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-                >
-                    {slides.map((slide) => (
-                        <div key={slide.id} className="w-full shrink-0">
-                            {slide.content}
+        <section className="relative w-full max-w-7xl mx-auto px-4 group">
+            <div className="overflow-hidden rounded-[2rem] shadow-2xl shadow-purple-200/50 relative min-h-[400px] md:h-[450px]">
+
+                {slides.map((slide, index) => (
+                    <div
+                        key={slide.id}
+                        className={`absolute inset-0 w-full h-full flex items-center transition-opacity duration-700 ease-in-out ${slide.bg} ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                            }`}
+                    >
+                        {/* Decorative Patterns */}
+                        <div className="absolute inset-0 opacity-10 bg-[url('/noise.png')]"></div>
+                        <div className="absolute -top-20 -right-20 w-80 h-80 bg-white/20 rounded-full blur-3xl"></div>
+                        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-white/20 rounded-full blur-3xl"></div>
+
+                        <div className="relative z-10 w-full px-8 md:px-16 flex flex-col md:flex-row items-center justify-between gap-8">
+
+                            {/* Text Content */}
+                            <div className={`flex-1 max-w-2xl text-left transition-all duration-700 delay-100 transform ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+                                <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-md border border-white/30 text-white text-sm font-bold rounded-full mb-6 shadow-sm">
+                                    {slide.badge}
+                                </span>
+
+                                <h2 className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
+                                    {slide.title}
+                                </h2>
+
+                                <p className="text-white/90 text-lg md:text-xl mb-8 max-w-lg font-medium">
+                                    {slide.subtitle}
+                                </p>
+
+                                <div>
+                                    <Link href={slide.btnLink} className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 font-bold rounded-full hover:bg-yellow-300 hover:scale-105 transition-all shadow-lg text-lg group/btn">
+                                        {slide.btnText}
+                                        <ChevronRight size={20} className="group-hover/btn:translate-x-1 transition-transform" />
+                                    </Link>
+                                </div>
+                            </div>
+
+                            {/* Image/Decor Content */}
+                            <div className={`hidden md:flex flex-1 justify-center items-center relative transition-all duration-1000 delay-200 transform ${index === currentSlide ? 'scale-100 opacity-100 rotate-0' : 'scale-90 opacity-0 rotate-12'}`}>
+                                <div className="relative">
+                                    {slide.image ? (
+                                        <img
+                                            src={slide.image}
+                                            alt={slide.decor}
+                                            className="w-[500px] h-[500px] object-contain drop-shadow-2xl"
+                                        />
+                                    ) : (
+                                        <div className="text-[15rem] leading-none drop-shadow-2xl filter saturate-150 animate-pulse">
+                                            {slide.decor}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                ))}
+
+                {/* Navigation Dots */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+                    {slides.map((_, index) => (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentSlide(index)}
+                            className={`h-3 rounded-full transition-all duration-300 ${currentSlide === index ? 'w-8 bg-white' : 'w-3 bg-white/50 hover:bg-white/80'
+                                }`}
+                            aria-label={`Slide ${index + 1}`}
+                        />
                     ))}
                 </div>
             </div>
@@ -154,34 +159,16 @@ export default function HeroCarousel() {
             {/* Arrows */}
             <button
                 onClick={prevSlide}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 lg:translate-x-0 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-purple-700 hover:scale-110 transition-transform md:opacity-0 group-hover:opacity-100 z-20"
+                className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur navigation-arrow rounded-full shadow-lg flex items-center justify-center text-gray-800 hover:scale-110 hover:bg-white transition-all opacity-0 group-hover:opacity-100 z-30"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
+                <ChevronLeft size={24} />
             </button>
-
             <button
                 onClick={nextSlide}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 lg:translate-x-0 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-purple-700 hover:scale-110 transition-transform md:opacity-0 group-hover:opacity-100 z-20"
+                className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/80 backdrop-blur navigation-arrow rounded-full shadow-lg flex items-center justify-center text-gray-800 hover:scale-110 hover:bg-white transition-all opacity-0 group-hover:opacity-100 z-30"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
+                <ChevronRight size={24} />
             </button>
-
-            {/* Dots */}
-            <div className="flex justify-center gap-2 mt-6">
-                {slides.map((_, index) => (
-                    <button
-                        key={index}
-                        onClick={() => setCurrentSlide(index)}
-                        className={`w-3 h-3 rounded-full transition-all ${currentSlide === index ? 'bg-purple-600 scale-125' : 'bg-gray-300 hover:bg-purple-400'
-                            }`}
-                        aria-label={`Ir para slide ${index + 1}`}
-                    />
-                ))}
-            </div>
-        </div>
+        </section>
     )
 }

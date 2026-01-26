@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, memo } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { clsx } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 export interface VariantData {
     id: number
@@ -24,189 +26,167 @@ interface ProductCardProps {
     slug?: string
     offerBadge?: boolean
     cashback?: string
-    // Legacy props support (optional)
     nomePrincipal?: string
     variants?: VariantData[]
 }
 
-export default function ProductCard({
-    title,
-    image,
-    price,
-    installments,
-    store = 'Melhor Oferta',
-    rating = 4.8,
-    reviews = 0,
-    id,
-    slug = '#',
-    offerBadge,
-    cashback,
-    nomePrincipal,
-    variants
+function ProductCard({
+    title, image, price, installments, store = 'Melhor Oferta',
+    rating = 4.8, reviews = 0, id, slug = '#',
+    offerBadge, cashback, nomePrincipal, variants
 }: ProductCardProps) {
-    // State for interactive variants
     const [selectedVariant, setSelectedVariant] = useState<VariantData | null>(null)
     const [imageError, setImageError] = useState(false)
 
-    // Reset selection when title changes (new product loaded in same slot)
-    useEffect(() => {
-        setSelectedVariant(null)
-    }, [title, nomePrincipal])
+    useEffect(() => { setSelectedVariant(null) }, [title, nomePrincipal])
 
-    // Determine values to display (Selected Variant OR Default Props)
     const activeImage = selectedVariant?.imagem || image
     const activeTitle = title || nomePrincipal || 'Produto sem nome'
     const activePrice = selectedVariant?.preco || price
     const activeStore = selectedVariant?.loja || store
     const activeId = selectedVariant?.id || id
 
-    // Safe price display
     const formattedPrice = (typeof activePrice === 'number')
         ? activePrice.toLocaleString('pt-BR', { minimumFractionDigits: 2 })
         : '0,00'
 
-    // Generate accurate link
     let productLink = '#'
-    if (activeId) {
-        productLink = `/produto/${activeId}`
-    } else if (slug && slug !== '#') {
-        if (slug.startsWith('ofertas') || slug.startsWith('/') || slug.startsWith('http')) {
-            productLink = slug.startsWith('ofertas') ? `/${slug}` : slug
-        } else {
-            productLink = `/?q=${slug}`
-        }
+    if (activeId) productLink = `/produto/${activeId}`
+    else if (slug && slug !== '#') {
+        productLink = (slug.startsWith('ofertas') || slug.startsWith('/') || slug.startsWith('http'))
+            ? (slug.startsWith('ofertas') ? `/${slug}` : slug)
+            : `/?q=${slug}`
     } else {
         productLink = `/?q=${encodeURIComponent(activeTitle)}`
     }
 
     return (
-        <Link href={productLink} className="group bg-white rounded-xl border border-gray-200 p-4 hover:shadow-xl transition-all hover:border-purple-300 flex flex-col h-full relative overflow-hidden">
+        <Link href={productLink} className="group relative block h-full">
+            <div
+                className="h-full bg-white rounded-2xl p-4 flex flex-col relative overflow-hidden transition-all duration-300 border border-transparent hover:border-purple-100 hover:shadow-lg hover:-translate-y-1 ring-1 ring-gray-100 ring-offset-0"
+            >
 
-            {/* Offer Badge (Buscapé Style Fire) */}
-            {offerBadge && (
-                <div className="absolute top-0 left-0 bg-[#ffd000] text-[#522166] text-xs font-bold px-3 py-1 rounded-br-lg z-10 flex items-center gap-1">
-                    🔥 Oferta do dia
-                </div>
-            )}
-
-            {/* Favorite Button */}
-            <button className="absolute top-3 right-3 text-gray-300 hover:text-red-500 transition-colors z-10" onClick={(e) => e.preventDefault()}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-            </button>
-
-            {/* Image Area */}
-            <div className="relative w-full h-48 mb-4 flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
-                {activeImage && !imageError ? (
-                    <img
-                        src={activeImage}
-                        alt={activeTitle}
-                        className="max-h-full max-w-full object-contain"
-                        onError={() => setImageError(true)}
-                    />
-                ) : (
-                    <div className="w-full h-full bg-gray-50 rounded-lg flex flex-col items-center justify-center text-gray-300 gap-2">
-                        <span className="text-4xl">🐾</span>
-                        <span className="text-[10px] font-medium">Sem foto</span>
-                    </div>
-                )}
-            </div>
-
-            {/* Content Container - Slides up on hover */}
-            <div className="flex-1 flex flex-col transition-transform duration-300 group-hover:-translate-y-12 bg-white z-10">
-                {/* Title */}
-                <h3 className="text-sm font-medium text-gray-800 line-clamp-2 mb-2 min-h-[40px] group-hover:text-[#6b21a8] transition-colors">{activeTitle}</h3>
-
-                {/* Rating */}
-                <div className="flex items-center gap-1 mb-3">
-                    <div className="flex text-yellow-400 text-xs">
-                        {[...Array(5)].map((_, i) => (
-                            <svg key={i} xmlns="http://www.w3.org/2000/svg" className={`h-3 w-3 ${i < Math.floor(rating) ? 'fill-current' : 'text-gray-200'}`} viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
-                        ))}
-                    </div>
-                    <span className="text-xs text-gray-400">({reviews})</span>
+                {/* Badges */}
+                <div className="absolute top-0 left-0 p-3 z-10 flex flex-col gap-2">
+                    {offerBadge && (
+                        <span className="bg-yellow-400 text-yellow-900 text-[10px] font-black uppercase px-2 py-1 rounded-lg shadow-sm">
+                            🔥 Oferta
+                        </span>
+                    )}
+                    {cashback && (
+                        <span className="bg-blue-500 text-white text-[10px] font-bold px-2 py-1 rounded-lg shadow-sm">
+                            {cashback} cashback
+                        </span>
+                    )}
                 </div>
 
-                {/* Variants (Weights) */}
-                {variants && variants.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-2">
-                        {variants.slice(0, 10).map((variant, i) => {
-                            const isSelected = selectedVariant?.id === variant.id
-                            return (
+                {/* Favorite Heart - Simplified */}
+                <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button className="p-2 rounded-full bg-white text-gray-300 hover:text-red-500 shadow-sm" onClick={(e) => e.preventDefault()}>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
+                </div>
+
+                {/* Image */}
+                <div className="relative w-full aspect-square mb-4 flex items-center justify-center p-2 bg-white">
+                    {activeImage && !imageError ? (
+                        <div className="relative w-full h-full">
+                            <Image
+                                src={activeImage}
+                                alt={activeTitle}
+                                fill
+                                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                                className="object-contain drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                                onError={() => setImageError(true)}
+                                loading="lazy"
+                                unoptimized={activeImage?.includes('petz') || activeImage?.includes('cobasi')}
+                            />
+                        </div>
+                    ) : (
+                        <div className="w-full h-full bg-gray-50 rounded-xl flex flex-col items-center justify-center text-gray-300 gap-2">
+                            <span className="text-4xl filter grayscale opacity-50">🐾</span>
+                        </div>
+                    )}
+
+                    {/* Quick Action Overlay (Moved to Image) */}
+                    <div className="absolute bottom-2 left-2 right-2 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                        <button className="w-full bg-white/90 backdrop-blur-sm text-purple-700 font-bold py-2.5 rounded-xl shadow-lg border border-purple-100 flex items-center justify-center gap-2 hover:bg-purple-600 hover:text-white transition-all">
+                            Ver Preços
+                        </button>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 flex flex-col">
+                    <h3 className="text-sm font-semibold text-gray-700 leading-snug line-clamp-2 mb-2 group-hover:text-purple-700 transition-colors">
+                        {activeTitle}
+                    </h3>
+
+                    {/* Meta Rating & Store */}
+                    <div className="flex items-center justify-between mb-3 text-xs">
+                        <div className="flex items-center gap-1 text-yellow-400">
+                            <span>★</span>
+                            <span className="font-bold text-gray-600">{rating}</span>
+                        </div>
+                        <div className="text-gray-400 font-medium truncate max-w-[50%]">
+                            {activeStore}
+                        </div>
+                    </div>
+
+                    {/* Variants */}
+                    {variants && variants.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mb-3">
+                            {variants.slice(0, 4).map((variant, i) => (
                                 <button
                                     key={i}
                                     onClick={(e) => {
-                                        e.preventDefault()
-                                        e.stopPropagation()
-                                        setSelectedVariant(variant)
+                                        e.preventDefault(); e.stopPropagation(); setSelectedVariant(variant)
                                     }}
-                                    className={`text-[10px] px-2 py-1 rounded border transition-colors ${isSelected
-                                        ? 'bg-purple-100 border-purple-300 text-purple-700 font-bold'
-                                        : 'bg-white text-gray-600 border-gray-200 hover:border-purple-200'
-                                        }`}
+                                    className={twMerge(
+                                        "text-[10px] px-1.5 py-0.5 rounded border transition-all",
+                                        selectedVariant?.id === variant.id
+                                            ? "bg-purple-600 text-white border-purple-600 font-bold shadow-md"
+                                            : "bg-gray-50 text-gray-500 border-gray-100 hover:border-purple-200 hover:text-purple-600"
+                                    )}
                                 >
                                     {variant.label}
                                 </button>
-                            )
-                        })}
-                        {variants.length > 10 && (
-                            <span className="text-[10px] text-gray-500 px-1 py-0.5 self-center">
-                                +{variants.length - 10}
-                            </span>
-                        )}
-                    </div>
-                )}
-
-                {/* Price Block */}
-                <div className="mt-auto">
-
-                    {/* Store Badge */}
-                    <div className="text-[10px] text-gray-500 mb-1 flex items-center gap-1">
-                        Menor preço via <span className="font-bold text-[#522166]">{activeStore}</span>
-                    </div>
-
-                    <div className="flex items-end gap-2 mb-1">
-                        <span className="text-2xl font-extrabold text-[#522166]">
-                            R$ {formattedPrice}
-                        </span>
-                        {/* Cashback Tag */}
-                        {cashback && (
-                            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded flex items-center gap-0.5 mb-1.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                </svg>
-                                {cashback} volta
-                            </span>
-                        )}
-                    </div>
-
-                    {installments && (
-                        <div className="text-xs text-green-600 font-medium truncate">
-                            {installments}
+                            ))}
+                            {variants.length > 4 && (
+                                <span className="text-[10px] text-gray-400 px-1 py-0.5">+</span>
+                            )}
                         </div>
                     )}
+
+                    {/* Price */}
+                    <div className="mt-auto pt-2 border-t border-dashed border-gray-100">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-gray-400 font-medium">a partir de</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-sm text-purple-600 font-bold">R$</span>
+                                <span className="text-2xl font-black text-gray-800 tracking-tight group-hover:text-purple-700 transition-colors">
+                                    {formattedPrice.split(',')[0]}
+                                </span>
+                                <span className="text-xs text-gray-800 font-bold">
+                                    ,{formattedPrice.split(',')[1]}
+                                </span>
+                            </div>
+                        </div>
+                        {installments && (
+                            <div className="text-[10px] text-green-600 font-medium mt-1 truncate">
+                                {installments}
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
 
-            {/* Footer - "Compare" Link (Visible by default) */}
-            <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between group-hover:opacity-0 transition-opacity duration-200">
-                <span className="text-xs text-gray-500">Compare ofertas</span>
-                <span className="text-xs text-[#6b21a8] font-bold">Ver preços &gt;</span>
-            </div>
+                {/* Quick Action Overlay (CSS Only) */}
 
-            {/* Hover Action Button (Slides up) */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out bg-white/95 backdrop-blur-sm border-t border-purple-100">
-                <button className="w-full bg-[#6b21a8] text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 hover:bg-[#5a1b8e] transition-colors shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
-                    </svg>
-                    Ver Ofertas
-                </button>
             </div>
         </Link>
     )
 }
+
+export default memo(ProductCard)

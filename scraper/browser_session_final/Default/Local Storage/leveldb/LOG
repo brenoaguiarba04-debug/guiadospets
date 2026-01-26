@@ -1,0 +1,24 @@
+2026/01/25-01:16:56.323 41b0 Reusing MANIFEST C:\Users\breno\Downloads\backup_site-20260116T230646Z-3-001\guiadopet-nextjs\scraper\browser_session_final\Default\Local Storage\leveldb/MANIFEST-000001
+2026/01/25-01:16:56.329 41b0 Recovering log #10
+2026/01/25-01:16:56.330 41b0 Reusing old log C:\Users\breno\Downloads\backup_site-20260116T230646Z-3-001\guiadopet-nextjs\scraper\browser_session_final\Default\Local Storage\leveldb/000010.log 
+2026/01/25-01:17:47.348 3e94 Level-0 table #13: started
+2026/01/25-01:17:47.360 3e94 Level-0 table #13: 60983 bytes OK
+2026/01/25-01:17:47.369 3e94 Delete type=0 #10
+2026/01/25-01:18:35.315 3e94 Level-0 table #15: started
+2026/01/25-01:18:35.321 3e94 Level-0 table #15: 58129 bytes OK
+2026/01/25-01:18:35.323 3e94 Delete type=0 #12
+2026/01/25-01:19:13.512 3e94 Level-0 table #17: started
+2026/01/25-01:19:13.519 3e94 Level-0 table #17: 53122 bytes OK
+2026/01/25-01:19:13.521 3e94 Delete type=0 #14
+2026/01/25-01:19:13.522 3e94 Compacting 4@0 + 1@1 files
+2026/01/25-01:19:13.528 3e94 Generated table #18@0: 158 keys, 56323 bytes
+2026/01/25-01:19:13.528 3e94 Compacted 4@0 + 1@1 files => 56323 bytes
+2026/01/25-01:19:13.528 3e94 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/01/25-01:19:13.529 3e94 Delete type=2 #7
+2026/01/25-01:19:13.529 3e94 Delete type=2 #9
+2026/01/25-01:19:13.529 3e94 Delete type=2 #13
+2026/01/25-01:19:13.529 3e94 Delete type=2 #15
+2026/01/25-01:19:13.529 3e94 Delete type=2 #17
+2026/01/25-01:20:01.999 3e94 Level-0 table #20: started
+2026/01/25-01:20:02.005 3e94 Level-0 table #20: 57700 bytes OK
+2026/01/25-01:20:02.007 3e94 Delete type=0 #16
