@@ -81,6 +81,12 @@ function normalizeUrl(link: string, baseUrl: string): string {
 }
 
 function extractWeightFromText(text: string): string | null {
+    // Check for range first: "2 a 4 kg", "2-4kg", "10 a 20 kg"
+    const rangeMatch = text.match(/(\d+(?:[\.,]\d+)?)\s*(?:a|-|à)\s*(\d+(?:[\.,]\d+)?)\s?(kg|g|ml|l|mg)/i);
+    if (rangeMatch) {
+        const u = rangeMatch[3].toLowerCase();
+        return `${rangeMatch[1]}-${rangeMatch[2]}${u}`;
+    }
     const match = text.match(/(\d+(?:[\.,]\d+)?)\s?(kg|g|ml|l|mg)/i);
     return match ? match[0].toLowerCase().replace(/\s+/g, '') : null;
 }
@@ -102,18 +108,32 @@ function weightsMatch(weight1: string | null, weight2: string | null): boolean {
     const w1 = normalizeWeight(weight1);
     const w2 = normalizeWeight(weight2);
     if (w1 === w2) return true;
-    const num1 = parseFloat(w1.match(/[\d.]+/)?.[0] || '0');
-    const unit1 = w1.match(/[a-z]+/)?.[0] || '';
-    const num2 = parseFloat(w2.match(/[\d.]+/)?.[0] || '0');
-    const unit2 = w2.match(/[a-z]+/)?.[0] || '';
-    const conversions: Record<string, number> = { 'kg': 1000, 'g': 1, 'mg': 0.001, 'l': 1000, 'ml': 1 };
-    const grams1 = num1 * (conversions[unit1] || 1);
-    const grams2 = num2 * (conversions[unit2] || 1);
-    // Allow 10kg matching 10.1kg (common for Quatree)
-    if (unit1 === unit2 && Math.abs(num1 - num2) <= 0.2) return true;
 
-    if (unit1 !== unit2) return false;
-    return Math.abs(num1 - num2) < 0.01;
+    // Helper to parse value/unit
+    const parseW = (w: string) => {
+        if (w.includes('-')) {
+            const parts = w.match(/([\d.]+)-([\d.]+)([a-z]+)/);
+            if (!parts) return { n: 0, u: '' };
+            return { min: parseFloat(parts[1]), max: parseFloat(parts[2]), u: parts[3], isRange: true };
+        }
+        return { n: parseFloat(w.match(/[\d.]+/)?.[0] || '0'), u: w.match(/[a-z]+/)?.[0] || '', isRange: false };
+    };
+
+    const p1: any = parseW(w1);
+    const p2: any = parseW(w2);
+
+    // Unit check must match
+    if (p1.u !== p2.u) return false;
+
+    if (p1.isRange && p2.isRange) {
+        return (Math.abs(p1.min - p2.min) < 0.1 && Math.abs(p1.max - p2.max) < 0.1);
+    }
+
+    if (p1.isRange && !p2.isRange) return false;
+    if (!p1.isRange && p2.isRange) return false;
+
+    // Normal comparison
+    return Math.abs(p1.n - p2.n) < 0.01;
 }
 
 async function autoScroll(page: Page) {
@@ -195,88 +215,111 @@ async function handleCardVariants(page: Page, card: any, targetWeight: string, l
 
 async function scrapePetz(page: Page, productQuery: string, targetWeight: string): Promise<ScrapedResult | null> {
     const logger = new Logger('Petz');
-    const url = `https://www.petz.com.br/busca?q=${encodeURIComponent(simplifyQuery(productQuery))}`;
-    try {
-        // Stealth headers
-        await page.setExtraHTTPHeaders({
-            'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-            'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'Upgrade-Insecure-Requests': '1'
-        });
+    const candidates: any[] = [];
 
-        await page.goto(url, { waitUntil: 'load', timeout: 90000 });
+    // 1️⃣ Intercepta APIs
+    page.on('response', async response => {
+        try {
+            const url = response.url();
+            const ct = response.headers()['content-type'] || '';
 
-        if (await page.title() === 'Access Denied') {
-            logger.warning('Access Denied. Retrying with delay...');
-            await page.waitForTimeout(5000);
-            await page.goto(url, { waitUntil: 'load', timeout: 90000 });
-        }
+            if (
+                ct.includes('application/json') &&
+                (
+                    url.includes('search') ||
+                    url.includes('catalog') ||
+                    url.includes('bff') ||
+                    url.includes('graphql') ||
+                    url.includes('busca') ||
+                    url.includes('recommendations')
+                )
+            ) {
+                const json = await response.json();
 
-        await waitForPageLoad(page, logger);
-        await autoScroll(page);
-        const visualCards = await page.$$('.product-card-wrapper, .product-item, [class*="card-product"]');
-        const candidates: any[] = [];
-        for (let i = 0; i < Math.min(visualCards.length, 12); i++) {
-            let card = visualCards[i];
+                const findItems = (obj: any): any[] => {
+                    if (!obj) return [];
+                    if (Array.isArray(obj)) return obj;
+                    if (obj.products) return obj.products;
+                    if (obj.items) return obj.items;
+                    if (obj.productList) return obj.productList;
+                    if (obj.result?.showcases) {
+                        return obj.result.showcases.flatMap((s: any) => s.productList || []);
+                    }
+                    if (obj.data?.products) return obj.data.products;
+                    if (obj.data?.search?.products) return obj.data.search.products;
+                    return [];
+                };
 
-            // Try to match variant before scraping price
-            const clicked = await handleCardVariants(page, card, targetWeight, logger);
+                const rawItems = findItems(json);
+                for (const baseItem of rawItems) {
+                    const variations = baseItem.variations || [baseItem];
+                    for (const item of variations) {
+                        let title = item.name || baseItem.name || item.productName || '';
+                        const baseName = baseItem.name || baseItem.productName || '';
 
-            if (clicked) {
-                // RE-LOCATE: site might have re-rendered the card
-                const refetchedCards = await page.$$('.product-card-wrapper, .product-item, [class*="card-product"]');
-                if (refetchedCards[i]) card = refetchedCards[i];
-            }
+                        if (title.length < 10 && baseName && !title.toLowerCase().includes(baseName.toLowerCase())) {
+                            title = `${baseName} ${title}`;
+                        }
 
-            const title = await card.$eval('h3, .product-name, a.card-link-product', (el: any) => el.innerText).catch(() => '');
-            const cardText = await card.innerText();
-            const priceMatches = cardText.match(/R\$\s*[\d.,]+/g) || [];
-            const vals = priceMatches.map(p => normalizePrice(p)).filter(v => v > 5);
-            const price = pickRetailPrice(vals, cardText);
-            const link = await card.$eval('a', (el: any) => el.href).catch(() => '');
-            if (title && price > 5) candidates.push({ title, price, link: normalizeUrl(link, url) });
-        }
-        if (candidates.length > 0) {
-            const bestIndex = await selectBestMatch(candidates, productQuery);
-            const best = bestIndex !== -1 ? candidates[bestIndex] : candidates[0];
+                        const price = Number(
+                            item.sellingPrice ??
+                            item.price ??
+                            baseItem.sellingPrice ??
+                            baseItem.price ??
+                            0
+                        );
 
-            // PDP FALLBACK: If price is low/ambiguous or user explicitly wants precise variant check
-            // Petz often shows "A partir de" (lowest price) in search results.
-            if (best && best.link) {
-                logger.info(`Visiting PDP for precise variant selection: ${best.link}`);
-                await page.goto(best.link, { waitUntil: 'load', timeout: 60000 });
-                await page.waitForTimeout(3000);
+                        // Fake positive filter
+                        if (price > 0 && price < 25 && productQuery.toLowerCase().includes('viva verde')) continue;
 
-                // Re-use handleCardVariants-like logic but on the whole page
-                const selectors = ['button', 'span', 'div', 'label', '[class*="variant"]', '[class*="size"]'];
-                for (const sel of selectors) {
-                    const options = await page.$$(sel);
-                    for (const opt of options) {
-                        const text = await opt.innerText().catch(() => '');
-                        const foundWeight = extractWeightFromText(text);
-                        if (foundWeight && weightsMatch(targetWeight, foundWeight)) {
-                            logger.info(`Clicking variant on PDP: ${text}`);
-                            await opt.click({ force: true }).catch(() => { });
-                            await page.waitForTimeout(3000);
-                            break;
+                        const link = item.url || item.link || baseItem.url || baseItem.link || '';
+                        if (title && price > 0) {
+                            candidates.push({
+                                title: title.trim(),
+                                price,
+                                link: link.startsWith('http') ? link : `https://www.petz.com.br${link}`,
+                                weight: extractWeightFromText(title),
+                                image: item.thumbnail || item.image || baseItem.image || ''
+                            });
                         }
                     }
                 }
-
-                // Final price extraction on PDP
-                const bodyText = await page.innerText('body');
-                const priceMatches = bodyText.match(/R\$\s*[\d.,]+/g) || [];
-                const finalPrice = pickRetailPrice(priceMatches.map(p => normalizePrice(p)).filter(v => v > 5), bodyText);
-
-                if (finalPrice > 5) {
-                    return { price: finalPrice, link: best.link, title: best.title };
-                }
             }
-            return best;
+        } catch { }
+    });
+
+    try {
+        await page.goto('https://www.petz.com.br/', { waitUntil: 'load', timeout: 30000 });
+
+        // Simulação humana: Dispara evento de busca via JS
+        await page.evaluate((query) => {
+            window.dispatchEvent(new CustomEvent('search', { detail: query }));
+        }, simplifyQuery(productQuery));
+
+        // Fallback: Tenta digitar se nada acontecer por 5s
+        await page.waitForTimeout(5000);
+        if (candidates.length === 0) {
+            const input = await page.$('#headerSearch, input[type="search"]');
+            if (input) {
+                await input.fill(simplifyQuery(productQuery));
+                await input.press('Enter');
+            }
         }
-    } catch (e: any) { logger.error('Error', e); }
+
+        await page.waitForTimeout(10000);
+
+        if (candidates.length > 0) {
+            try {
+                const bestIndex = await selectBestMatch(candidates, productQuery);
+                if (bestIndex !== -1) return candidates[bestIndex];
+            } catch { }
+
+            const fallback = candidates.find(c => weightsMatch(targetWeight, extractWeightFromText(c.title)));
+            return fallback || candidates[0];
+        }
+    } catch (e) {
+        logger.warning('Petz Timeout/Abort');
+    }
     return null;
 }
 

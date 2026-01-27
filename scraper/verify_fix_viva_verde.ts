@@ -13,10 +13,7 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// NOTE: Petz requires headless: false to avoid blocking. 
-// We are setting this to false for the entire script to ensure consistency and stability across all stores.
-const HEADLESS = false;
-const BATCH_SIZE = 5;
+const HEADLESS = false; // Using false to ensure Petz scraping works
 
 // ========== TYPES ==========
 interface Product {
@@ -40,7 +37,6 @@ function simplifyQuery(term: string): string {
 
 function normalizePrice(priceText: string | undefined): number {
     if (!priceText) return 0;
-    // Brazilian price might be "R$ 123,45" or "123.45"
     if (!/R\$|\$/.test(priceText) && !/[\d]/.test(priceText)) return 0;
 
     const match = priceText.match(/[\d.,]+/);
@@ -115,31 +111,13 @@ function weightsMatch(weight1: string | null, weight2: string | null): boolean {
     const p2: any = parseW(w2);
 
     // Unit check must match
-    if (p1.u !== p2.u) {
-        // Simple conversion check (kg vs g)
-        // For simplicity, strict unit check unless we add easy conversion here
-        // Assuming normalized output from extract function uses same units mostly
-        // But let's assume strict unit for now unless one is kg and other g
-        return false;
-    }
+    if (p1.u !== p2.u) return false;
 
     if (p1.isRange && p2.isRange) {
-        // Match if ranges overlap significantly or are identical
         return (Math.abs(p1.min - p2.min) < 0.1 && Math.abs(p1.max - p2.max) < 0.1);
     }
 
-    if (p1.isRange && !p2.isRange) {
-        // If product is range "2-4kg" and search is "3kg", maybe match?
-        // User said: "existe nexgard de 2-4kg.... é um range de peso"
-        // If we search for "Nexgard 2-4kg", we expect "Nexgard 2-4kg".
-        // If we search for "Nexgard 3kg", it might be inside the range?
-        // Usually medicines are sold BY RANGE. "Nexgard 2 a 4kg".
-        // So checking strict equality of the range bounds is best.
-        // But if p2 is just a number, maybe it falls within? 
-        // Let's stick to strict range matching for now.
-        return false;
-    }
-
+    if (p1.isRange && !p2.isRange) return false;
     if (!p1.isRange && p2.isRange) return false;
 
     // Normal comparison
@@ -164,13 +142,32 @@ async function autoScroll(page: Page) {
     });
 }
 
+import fs from 'fs';
+
 class Logger {
     private context: string;
-    constructor(context: string) { this.context = context; }
-    info(msg: string) { console.log(`[${new Date().toISOString()}] [${this.context}] ℹ️  ${msg}`); }
-    success(msg: string) { console.log(`[${new Date().toISOString()}] [${this.context}] ✅ ${msg}`); }
-    warning(msg: string) { console.log(`[${new Date().toISOString()}] [${this.context}] ⚠️  ${msg}`); }
-    error(msg: string, error?: any) { console.error(`[${new Date().toISOString()}] [${this.context}] ❌ ${msg}`, error || ''); }
+    private logFile: string;
+
+    constructor(context: string) {
+        this.context = context;
+        this.logFile = path.resolve(__dirname, 'verify_log.txt');
+    }
+
+    private write(level: string, msg: string, error?: any) {
+        const entry = `[${new Date().toISOString()}] [${this.context}] ${level} ${msg} ${error ? JSON.stringify(error) : ''}\n`;
+        console.log(entry.trim());
+        try {
+            fs.appendFileSync(this.logFile, entry);
+        } catch (e) {
+            console.error('Failed to write log', e);
+        }
+    }
+
+    info(msg: string) { this.write('ℹ️ ', msg); }
+    success(msg: string) { this.write('✅', msg); }
+    warning(msg: string) { this.write('⚠️ ', msg); }
+    error(msg: string, error?: any) { this.write('❌', msg, error); }
+    debug(msg: string) { this.write('🐛', msg); }
 }
 
 async function waitForPageLoad(page: Page, logger: Logger) {
@@ -188,15 +185,24 @@ async function waitForPageLoad(page: Page, logger: Logger) {
 // ========== ROBUST STORE SCRAPERS ========== //
 
 // 1. PETZ (Robust - with Visual Mode Support)
-async function scrapePetz(page: Page, productQuery: string, targetWeight: string): Promise<ScrapedResult | null> {
+async function scrapePetz(
+    page: Page,
+    productQuery: string,
+    targetWeight: string
+): Promise<ScrapedResult | null> {
+
     const logger = new Logger('Petz');
     const candidates: any[] = [];
 
-    // 1️⃣ Intercepta APIs
+    // 1️⃣ Intercepta APIs ANTES de tudo
     page.on('response', async response => {
         try {
             const url = response.url();
             const ct = response.headers()['content-type'] || '';
+
+            if (url.includes('petz')) {
+                logger.debug(`[Petz API Debug] Intercepted: ${url} (${ct})`);
+            }
 
             if (
                 ct.includes('application/json') &&
@@ -209,6 +215,7 @@ async function scrapePetz(page: Page, productQuery: string, targetWeight: string
                     url.includes('recommendations')
                 )
             ) {
+                logger.debug(`[Petz API Debug] Intercepted JSON API: ${url}`);
                 const json = await response.json();
 
                 const findItems = (obj: any): any[] => {
@@ -226,12 +233,15 @@ async function scrapePetz(page: Page, productQuery: string, targetWeight: string
                 };
 
                 const rawItems = findItems(json);
+                logger.debug(`[Petz API Debug] Found ${rawItems.length} potential base items`);
+
                 for (const baseItem of rawItems) {
                     const variations = baseItem.variations || [baseItem];
                     for (const item of variations) {
                         let title = item.name || baseItem.name || item.productName || '';
                         const baseName = baseItem.name || baseItem.productName || '';
 
+                        // Garante que o título tenha o contexto do nome base se for muito curto (ex: "4kg")
                         if (title.length < 10 && baseName && !title.toLowerCase().includes(baseName.toLowerCase())) {
                             title = `${baseName} ${title}`;
                         }
@@ -244,15 +254,20 @@ async function scrapePetz(page: Page, productQuery: string, targetWeight: string
                             0
                         );
 
-                        // Fake positive filter
-                        if (price > 0 && price < 25 && productQuery.toLowerCase().includes('viva verde')) continue;
+                        // Filtro de segurança para preços absurdamente baixos que não batem com o produto
+                        if (price > 0 && price < 25 && productQuery.toLowerCase().includes('viva verde')) {
+                            // Se for Viva Verde e estiver muito barato, ignorar candidado suspeito (provavelmente brinde ou item errado)
+                            continue;
+                        }
 
                         const link = item.url || item.link || baseItem.url || baseItem.link || '';
+
                         if (title && price > 0) {
                             candidates.push({
                                 title: title.trim(),
                                 price,
                                 link: link.startsWith('http') ? link : `https://www.petz.com.br${link}`,
+                                store: 'petz',
                                 weight: extractWeightFromText(title),
                                 image: item.thumbnail || item.image || baseItem.image || ''
                             });
@@ -264,38 +279,71 @@ async function scrapePetz(page: Page, productQuery: string, targetWeight: string
     });
 
     try {
-        await page.goto('https://www.petz.com.br/', { waitUntil: 'load', timeout: 30000 });
+        // 1️⃣ Abre a home SEM esperar render
+        await page.goto('https://www.petz.com.br/', {
+            waitUntil: 'domcontentloaded',
+            timeout: 45000
+        });
 
-        // Simulação humana: Dispara evento de busca via JS
+        // 2️⃣ Dá um pequeno delay humano
+        await page.waitForTimeout(2000);
+
+        // 3️⃣ Injeta busca via JS (SEM DOM)
         await page.evaluate((query) => {
-            window.dispatchEvent(new CustomEvent('search', { detail: query }));
+            // User's hint
+            const ev = new CustomEvent('search', { detail: query });
+            window.dispatchEvent(ev);
+
+            // fallback SPA + Form Submission
+            const input = document.querySelector('#headerSearch, input[type="search"]') as HTMLInputElement;
+            if (input) {
+                input.value = query;
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+
+                const form = input.closest('form');
+                if (form) {
+                    const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+                    form.dispatchEvent(submitEvent);
+                } else {
+                    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true }));
+                }
+            }
         }, simplifyQuery(productQuery));
 
-        // Fallback: Tenta digitar se nada acontecer por 5s
-        await page.waitForTimeout(5000);
+        // 4️⃣ Aguarda SOMENTE API
+        const maxWait = 12000;
+        const start = Date.now();
+
+        while (candidates.length === 0 && Date.now() - start < maxWait) {
+            await page.waitForTimeout(500);
+        }
+
         if (candidates.length === 0) {
-            const input = await page.$('#headerSearch, input[type="search"]');
-            if (input) {
-                await input.fill(simplifyQuery(productQuery));
-                await input.press('Enter');
-            }
+            logger.warning('No API results from Petz');
+            return null;
         }
 
-        await page.waitForTimeout(10000);
+        logger.success(`Petz API results: ${candidates.length}`);
 
-        if (candidates.length > 0) {
-            try {
-                const bestIndex = await selectBestMatch(candidates, productQuery);
-                if (bestIndex !== -1) return candidates[bestIndex];
-            } catch { }
-
-            const fallback = candidates.find(c => weightsMatch(targetWeight, extractWeightFromText(c.title)));
-            return fallback || candidates[0];
+        // 6️⃣ Escolha do melhor
+        try {
+            const bestIndex = await selectBestMatch(candidates, productQuery);
+            if (bestIndex !== -1) return candidates[bestIndex];
+        } catch {
+            logger.warning('LLM failed, fallback');
         }
+
+        const fallback = candidates.find(c =>
+            weightsMatch(targetWeight, extractWeightFromText(c.title))
+        );
+
+        return fallback || candidates[0];
+
     } catch (e) {
-        logger.warning('Petz Timeout/Abort');
+        logger.warning('Petz aborted (timeout or soft-block)');
+        return null;
     }
-    return null;
 }
 
 // 2. PETLOVE (Robust - JSON-LD)
@@ -316,7 +364,6 @@ async function scrapePetlove(page: Page, productQuery: string, targetWeight: str
                 try {
                     const json = JSON.parse(script.textContent || '{}');
 
-                    // Handle ItemList (Search Results)
                     if (json['@type'] === 'ItemList' && json.itemListElement) {
                         json.itemListElement.forEach((item: any) => {
                             results.push({
@@ -326,7 +373,6 @@ async function scrapePetlove(page: Page, productQuery: string, targetWeight: str
                             });
                         });
                     }
-                    // Handle Single Product (often the main result)
                     else if (json['@type'] === 'Product') {
                         results.push({
                             title: json.name,
@@ -364,7 +410,6 @@ async function scrapePetlove(page: Page, productQuery: string, targetWeight: str
             if (!bestMatch) bestMatch = candidates[0];
 
             if (bestMatch && bestMatch.link && bestMatch.price > 5) {
-                // If we already have a good price from JSON-LD, return it
                 return { price: bestMatch.price, link: normalizeUrl(bestMatch.link, url), title: bestMatch.title };
             }
         }
@@ -382,7 +427,6 @@ async function scrapeCobasi(page: Page, productQuery: string, targetWeight: stri
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
 
-        // Dynamic wait for verified selector
         try {
             await page.waitForSelector('[data-testid="product-item-v4"], [class*="ProductCard"]', { timeout: 15000 });
         } catch (e) { }
@@ -396,12 +440,10 @@ async function scrapeCobasi(page: Page, productQuery: string, targetWeight: stri
             const card = cards[i];
             let title = '';
 
-            // Try structured h3 first, then img alt, then text
             title = await card.$eval('h3', el => el.textContent?.trim()).catch(() => '') || '';
             if (!title) title = await card.$eval('img', el => el.getAttribute('alt')).catch(() => '') || '';
             if (!title) title = await card.innerText().catch(() => '') || '';
 
-            // Price extraction using the verified logic
             const cardText = await card.innerText();
             const priceEl = await card.$('.card-price');
             let price = 0;
@@ -418,6 +460,12 @@ async function scrapeCobasi(page: Page, productQuery: string, targetWeight: stri
             let link = await card.getAttribute('href') || await card.$eval('a', el => el.getAttribute('href')).catch(() => '') || '';
 
             if (title && price > 0) {
+                // Weight Enrichment for Cobasi
+                const tWeight = extractWeightFromText(title);
+                if (!tWeight) {
+                    const extraWeight = extractWeightFromText(cardText);
+                    if (extraWeight) title = `${title} - ${extraWeight}`;
+                }
                 candidates.push({ title, price, link: normalizeUrl(link, url) });
             }
         }
@@ -443,7 +491,6 @@ async function processProduct(context: BrowserContext, product: Product) {
     const w = weight || 'N/A';
     contextLogger.info(`Processing weight: ${w}`);
 
-    // Standard headers
     const extraHeaders = {
         'Accept-Language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
         'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120", "Google Chrome";v="120"',
@@ -456,7 +503,6 @@ async function processProduct(context: BrowserContext, product: Product) {
         { name: 'petz', fn: scrapePetz },
         { name: 'petlove', fn: scrapePetlove },
         { name: 'cobasi', fn: scrapeCobasi }
-        // Amazon and Mercado Livre removed as requested
     ];
 
     for (const store of stores) {
@@ -468,7 +514,6 @@ async function processProduct(context: BrowserContext, product: Product) {
             const result = await store.fn(page, product.nome, w);
 
             if (result) {
-                // STRICT FINAL WEIGHT CHECK
                 const foundWeight = extractWeightFromText(result.title);
                 if (weight) {
                     if (!foundWeight || !weightsMatch(weight, foundWeight)) {
@@ -478,19 +523,7 @@ async function processProduct(context: BrowserContext, product: Product) {
                     }
                 }
 
-                contextLogger.success(`${store.name} Found: R$ ${result.price}`);
-                // Save to DB
-                const { error: insertError } = await supabase.from('precos').insert({
-                    produto_id: product.id,
-                    preco: result.price,
-                    loja: store.name,
-                    link_afiliado: result.link,
-                    ultima_atualizacao: new Date().toISOString()
-                });
-
-                if (insertError) {
-                    contextLogger.error(`DB Error: ${insertError.message}`);
-                }
+                contextLogger.success(`${store.name} Found: R$ ${result.price} | ${result.title}`);
             } else {
                 contextLogger.warning(`${store.name} No match.`);
             }
@@ -501,38 +534,28 @@ async function processProduct(context: BrowserContext, product: Product) {
     }
 }
 
-async function runMain() {
-    console.log("=== STARTING ROBUST FINAL SCRAPER (Petz, Petlove, Cobasi) ===");
-
-    const { data: rawProducts, error } = await supabase.from('produtos').select('*');
-    const products = rawProducts || [];
-    console.log(`Processing ${products.length} products.`);
+async function verifyMain() {
+    console.log("=== VERIFICATION: VIVA VERDE 4KG ===");
+    console.log("Initializing simplified verification run (NO DATABASE INSERT)...");
 
     const browser = await chromium.launch({
-        headless: HEADLESS, // Using false to ensure Petz scraping works
-        args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-blink-features=AutomationControlled',
-            '--start-maximized'
-        ],
+        headless: HEADLESS,
+        args: ['--start-maximized', '--disable-blink-features=AutomationControlled'],
         ignoreDefaultArgs: ['--enable-automation']
     });
 
     const context = await browser.newContext({
         userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        viewport: { width: 1366, height: 768 }, // Standard desktop
+        viewport: { width: 1366, height: 768 },
         bypassCSP: true,
         javaScriptEnabled: true,
     });
 
-    for (let i = 0; i < products.length; i += BATCH_SIZE) {
-        const batch = products.slice(i, i + BATCH_SIZE);
-        await Promise.all(batch.map(p => processProduct(context, p)));
-    }
+    const testProduct = { id: 'test', nome: 'Areia Viva Verde 4kg' };
+    await processProduct(context, testProduct);
 
     await browser.close();
-    console.log("=== SCRAPING COMPLETE ===");
+    console.log("=== VERIFICATION COMPLETE ===");
 }
 
-runMain();
+verifyMain();
