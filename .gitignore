@@ -48,3 +48,11 @@ mass_update_list.json
 .agents/
 .gemini/
 .opencode/
+
+# Scrapers (LOCAL ONLY - DO NOT COMMIT)
+scraper/amazon_scraper.ts
+scraper/ollama.ts
+scripts/amazon_scraper.ts
+scripts/debug_*.png
+scripts/debug_*.html
+scraper/debug_*.png
