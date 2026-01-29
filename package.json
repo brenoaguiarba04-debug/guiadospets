@@ -15,7 +15,9 @@
     "scrape": "npx tsx scraper/index.ts",
     "scrape:audit": "npx tsx scraper/audit.ts",
     "scrape:find": "npx tsx scraper/finder.ts",
-    "scrape:login": "npx tsx scraper/login.ts"
+    "scrape:login": "npx tsx scraper/login.ts",
+    "scrape:ml": "npx tsx scraper/mercado-livre.ts",
+    "scrape:shopee": "npx tsx scraper/shopee.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.36.8",

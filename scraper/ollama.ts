@@ -8,6 +8,7 @@ export interface ProductCandidate {
     price: number;
     link: string;
     index: number;
+    sales?: number;
 }
 
 export async function selectBestMatch(candidates: ProductCandidate[], query: string): Promise<number> {
@@ -47,7 +48,7 @@ Do not explain. Just the number.
                 }
             },
             responseType: 'json',
-            timeout: 20000
+            timeout: { request: 20000 }
         }).json();
 
         const responseText = response.response?.trim() || response.done_reason === 'stop' ? response.response : '';
