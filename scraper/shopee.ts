@@ -1,7 +1,11 @@
 
 import { createClient } from '@supabase/supabase-js'
 import crypto from 'crypto'
-// import fetch from 'node-fetch' // Native fetch in Node 18+
+import { selectBestMatch, ProductCandidate } from './ollama'
+import dotenv from 'dotenv'
+
+dotenv.config()
+dotenv.config({ path: '.env.local' })
 
 // Configurações e Tipos
 interface ShopeeProduct {
@@ -113,34 +117,29 @@ async function buscarNaShopee(nomeProduto: string) {
             return null
         }
 
-        // LÓGICA DE SELEÇÃO: Commission >= 9% && Menor Preço
-        const TAXA_MINIMA = 0.09; // 9%
+        // 4. SELEÇÃO INTELIGENTE VIA GROQ AI
+        const candidates: ProductCandidate[] = produtos.map((p, index) => ({
+            index,
+            title: p.productName,
+            price: parseFloat(p.price),
+            link: p.offerLink
+        }));
 
-        // 1. Tenta filtrar produtos com boa comissão
-        const highCommission = produtos.filter(p => p.commissionRate >= TAXA_MINIMA);
+        const bestIndex = await selectBestMatch(candidates, nomeProduto);
 
-        let escolhido: ShopeeProduct | null = null;
+        if (bestIndex !== -1) {
+            const chosen = produtos[bestIndex];
+            const price = parseFloat(chosen.price);
+            console.log(`   🏆 Eleito pela AI: R$ ${price.toFixed(2)} - ${chosen.productName?.slice(0, 30)}...`);
 
-        if (highCommission.length > 0) {
-            // Se tem produtos com boa comissão, pega o mais barato entre eles
-            highCommission.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-            escolhido = highCommission[0];
-            console.log(`   💎 ATENÇÃO: Selecionado por boa comissão! (${(escolhido.commissionRate * 100).toFixed(1)}%)`);
+            return {
+                preco: price,
+                link: chosen.offerLink,
+                imagem: chosen.imageUrl
+            }
         } else {
-            // Fallback: Se ninguém paga bem, pega o mais barato geral
-            produtos.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
-            escolhido = produtos[0];
-            console.log(`   ⚠️ Comissão baixa (<9%), selecionado pelo menor preço. (${(escolhido.commissionRate * 100).toFixed(1)}%)`);
-        }
-
-        const produto = escolhido;
-        const preco = parseFloat(produto.price)
-        console.log(`   ✅ Encontrado: R$ ${preco.toFixed(2)} - ${produto.productName?.slice(0, 30)}...`)
-
-        return {
-            preco,
-            link: produto.offerLink,
-            imagem: produto.imageUrl
+            console.log("   ⏭️ Nenhum candidato correspondeu ao produto (AI Match Negativo).");
+            return null;
         }
 
     } catch (error: any) {
@@ -196,20 +195,20 @@ async function atualizarPrecoShopee(produtoId: number, resultado: any) {
 /**
  * Função principal de sincronização
  */
-async function main() {
+export async function syncShopee(limit?: number) {
     console.log('--- INICIANDO SINCRONIZAÇÃO SHOPEE ---')
     console.log(`App ID: ${SHOPEE_APP_ID}`)
 
-    // Check if running as script directly
-    // const { data: produtos, error } = await supabase
-    //     .from('produtos')
-    //     .select('id, nome')
-
-    // In TS, cleaner to just run it:
-
-    const { data: produtos, error } = await supabase
+    let query = supabase
         .from('produtos')
         .select('id, nome')
+        .order('id', { ascending: true });
+
+    if (limit) {
+        query = query.limit(limit);
+    }
+
+    const { data: produtos, error } = await query;
 
     if (error) {
         console.error('❌ Erro ao buscar produtos:', error.message)
@@ -244,4 +243,7 @@ async function main() {
     console.log(`\n🏁 Sincronização finalizada! ${sucesso}/${total} produtos atualizados.`)
 }
 
-main()
+if (require.main === module || process.argv[1].endsWith('shopee.ts')) {
+    const limit = process.argv.includes('--limit') ? parseInt(process.argv[process.argv.indexOf('--limit') + 1]) : undefined;
+    syncShopee(limit);
+}

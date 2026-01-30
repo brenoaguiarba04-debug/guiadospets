@@ -20,13 +20,20 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-export async function scrapeMercadoLivre() {
+export async function scrapeMercadoLivre(limit?: number) {
     console.log("🚀 Iniciando scraper do Mercado Livre...");
 
     // 1. Buscar produtos no banco
-    const { data: produtos, error } = await supabase
+    let queryBuilder = supabase
         .from('produtos')
-        .select('*');
+        .select('*')
+        .order('id', { ascending: true });
+
+    if (limit) {
+        queryBuilder = queryBuilder.limit(limit);
+    }
+
+    const { data: produtos, error } = await queryBuilder;
 
     if (error || !produtos) {
         console.error("❌ Erro ao buscar produtos:", error);
@@ -139,5 +146,6 @@ export async function scrapeMercadoLivre() {
 }
 
 if (require.main === module || process.argv[1].endsWith('mercado-livre.ts')) {
-    scrapeMercadoLivre();
+    const limit = process.argv.includes('--limit') ? parseInt(process.argv[process.argv.indexOf('--limit') + 1]) : undefined;
+    scrapeMercadoLivre(limit);
 }
