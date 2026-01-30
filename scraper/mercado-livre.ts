@@ -20,7 +20,7 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-async function scrapeMercadoLivre() {
+export async function scrapeMercadoLivre() {
     console.log("🚀 Iniciando scraper do Mercado Livre...");
 
     // 1. Buscar produtos no banco
@@ -97,62 +97,14 @@ async function scrapeMercadoLivre() {
 
             console.log(`🎲 Encontrados ${candidates.length} candidatos.`);
 
-            // FILTRAGEM E SELEÇÃO INTELIGENTE
+            console.log(`🎲 Encontrados ${candidates.length} candidatos.`);
 
-            // 1. Normalizar query para palavras-chave obrigatórias
-            // Remove palavras comuns (stop words) se necessário, mas por enquanto vamos usar a query limpa
-            const cleanQuery = query.toLowerCase().replace(/[^a-z0-9 ]/g, '');
-            const queryWords = cleanQuery.split(' ').filter((w: string) => w.length > 2); // Palavras com > 2 letras
+            // 4. SELEÇÃO INTELIGENTE VIA GROQ AI
+            const bestIndex = await selectBestMatch(candidates, query);
 
-            // Função para verificar Match
-            const checkMatch = (productTitle: string) => {
-                const cleanTitle = productTitle.toLowerCase().replace(/[^a-z0-9 ]/g, '');
-                // Verifica se TODAS as palavras chaves principais da query estão no título (AND logic strict)
-                // Para ser mais flexível, podemos exigir 75% de match ou palavras específicas (Marca)
-
-                // Estratégia Híbrida:
-                // Se o produto tem marca definida no banco, ELA DEVE ESTAR NO TÍTULO.
-                if (produto.marca) {
-                    const brand = produto.marca.toLowerCase();
-                    if (!cleanTitle.includes(brand)) return false;
-                }
-
-                // Verifica overlap de palavras
-                let matches = 0;
-                for (const word of queryWords) {
-                    if (cleanTitle.includes(word)) matches++;
-                }
-
-                // Pelo menos 2/3 das palavras devem bater
-                return matches >= Math.ceil(queryWords.length * 0.6);
-            };
-
-            const validCandidates = candidates.filter(c => checkMatch(c.title));
-
-            if (validCandidates.length > 0) {
-                console.log(`✅ ${validCandidates.length} candidatos passaram no filtro de nome.`);
-
-                // sorting: Priorizar menor preço, mas desempate com vendas?
-                // O usuário quer "Melhor avaliado com melhor preço".
-                // Vamos ordenar por Preço ASC. 
-                // Se houver produtos com preço muito próximo, pegamos o que tem mais vendas.
-
-                validCandidates.sort((a, b) => {
-                    // Se a diferença de preço for maior que 10%, o preço manda.
-                    const priceDiffPercent = Math.abs(a.price - b.price) / Math.min(a.price, b.price);
-                    if (priceDiffPercent > 0.1) {
-                        return a.price - b.price; // Menor preço vence
-                    }
-                    // Se preço é similar, vence quem tem mais vendas
-                    const salesDiff = (b.sales || 0) - (a.sales || 0);
-                    if (salesDiff !== 0) return salesDiff;
-
-                    // Se vendas são iguais (ou zero), o mais barato vence
-                    return a.price - b.price;
-                });
-
-                const best = validCandidates[0];
-                console.log(`🏆 Eleito: R$ ${best.price} - ${best.title} (${best.sales} vendas)`);
+            if (bestIndex !== -1) {
+                const best = candidates[bestIndex];
+                console.log(`🏆 Eleito pela AI: R$ ${best.price} - ${best.title} (${best.sales} vendas)`);
 
                 // 5. Salvar no Supabase
                 const { error: insertError } = await supabase
@@ -171,9 +123,7 @@ async function scrapeMercadoLivre() {
                     console.log("💾 Preço salvo com sucesso!");
                 }
             } else {
-                console.log("⏭️ Nenhum candidato passou no filtro de nome (Match rigoroso).");
-                console.log("Query words:", queryWords);
-                console.log("Candidato 1:", candidates[0]?.title);
+                console.log("⏭️ Nenhum candidato correspondeu ao produto (AI Match Negativo).");
             }
 
         } catch (err) {
@@ -188,4 +138,6 @@ async function scrapeMercadoLivre() {
     console.log("\n🏁 Scraper finalizado!");
 }
 
-scrapeMercadoLivre();
+if (require.main === module || process.argv[1].endsWith('mercado-livre.ts')) {
+    scrapeMercadoLivre();
+}
