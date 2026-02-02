@@ -10,23 +10,21 @@ const supabase = createClient(
 );
 
 async function count() {
-    const { count, error } = await supabase
+    const { count: precoCount, error: precoError } = await supabase
         .from('precos')
         .select('*', { count: 'exact', head: true });
 
-    if (error) {
-        console.error('Error fetching count:', error);
+    const { count: produtoCount, error: produtoError } = await supabase
+        .from('produtos')
+        .select('*', { count: 'exact', head: true });
+
+    if (precoError || produtoError) {
+        console.error('Error fetching count:', precoError || produtoError);
         return;
     }
 
-    const { data: latest } = await supabase
-        .from('precos')
-        .select('*')
-        .order('ultima_atualizacao', { ascending: false })
-        .limit(5);
-
-    console.log(`Total prices: ${count}`);
-    console.log('Latest prices:', latest);
+    console.log(`Total produtos: ${produtoCount}`);
+    console.log(`Total prices: ${precoCount}`);
 }
 
 count();

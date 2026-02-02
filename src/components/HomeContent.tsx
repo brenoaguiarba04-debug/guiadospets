@@ -71,7 +71,8 @@ export default function HomeContent({ grupos, searchTerm }: HomeContentProps) {
     }, [grupos, filtroPet])
 
     // Paginação simples
-    const ITEMS_PER_PAGE = 24
+    const ITEMS_PER_PAGE = 48
+
     const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE)
 
     // Reset paginação quando mudar filtros

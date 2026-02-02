@@ -113,21 +113,39 @@ export async function scrapeMercadoLivre(limit?: number) {
                 const best = candidates[bestIndex];
                 console.log(`🏆 Eleito pela AI: R$ ${best.price} - ${best.title} (${best.sales} vendas)`);
 
-                // 5. Salvar no Supabase
-                const { error: insertError } = await supabase
+                // 5. Salvar no Supabase (UPSERT)
+                const { data: existingPrice } = await supabase
                     .from('precos')
-                    .insert({
-                        produto_id: produto.id,
-                        loja: 'Mercado Livre',
-                        preco: best.price,
-                        link_afiliado: best.link,
-                        ultima_atualizacao: new Date().toISOString()
-                    });
+                    .select('id')
+                    .eq('produto_id', produto.id)
+                    .eq('loja', 'Mercado Livre')
+                    .single();
 
-                if (insertError) {
-                    console.error("❌ Erro ao salvar preço:", insertError);
+                if (existingPrice) {
+                    const { error: updateError } = await supabase
+                        .from('precos')
+                        .update({
+                            preco: best.price,
+                            link_afiliado: best.link,
+                            ultima_atualizacao: new Date().toISOString()
+                        })
+                        .eq('id', existingPrice.id);
+
+                    if (updateError) console.error("❌ Erro ao atualizar preço:", updateError);
+                    else console.log("🔄 Preço atualizado com sucesso!");
                 } else {
-                    console.log("💾 Preço salvo com sucesso!");
+                    const { error: insertError } = await supabase
+                        .from('precos')
+                        .insert({
+                            produto_id: produto.id,
+                            loja: 'Mercado Livre',
+                            preco: best.price,
+                            link_afiliado: best.link,
+                            ultima_atualizacao: new Date().toISOString()
+                        });
+
+                    if (insertError) console.error("❌ Erro ao salvar preço:", insertError);
+                    else console.log("💾 Novo preço salvo com sucesso!");
                 }
             } else {
                 console.log("⏭️ Nenhum candidato correspondeu ao produto (AI Match Negativo).");

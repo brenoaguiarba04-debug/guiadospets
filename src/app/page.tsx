@@ -62,50 +62,20 @@ export default async function HomePage({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <ProductCard
-                    title="Ração Royal Canin Medium Adulto - 15kg"
-                    image="https://cobasi.vteximg.com.br/arquivos/ids/1090509/Racao-Royal-Canin-Medium-Adult-para-Caes-Adultos-Porte-Medio.webp.webp?v=638978659389800000"
-                    price={289.90}
-                    installments="até 3x de R$ 96,63"
-                    store="Petz"
-                    rating={4.8}
-                    reviews={1240}
-                    slug="Ração Royal Canin Medium"
-                    offerBadge
-                    cashback="2%"
-                  />
-                  <ProductCard
-                    title="Bravecto MSD Antipulgas para Cães 20 a 40 kg"
-                    image="https://images.petz.com.br/fotos/1699967180573.jpg"
-                    price={219.90}
-                    installments="até 2x de R$ 109,95"
-                    store="Cobasi"
-                    rating={4.9}
-                    reviews={856}
-                    slug="Bravecto 20 a 40 kg"
-                    offerBadge
-                    cashback="5%"
-                  />
-                  <ProductCard
-                    title="Areia Higiênica Pipicat Classic para Gatos - 4kg"
-                    image="https://cobasi.vteximg.com.br/arquivos/ids/1022341/frente.jpg?v=638022127171900000"
-                    price={22.90}
-                    store="Amazon"
-                    rating={4.5}
-                    reviews={2100}
-                    slug="Areia Pipicat Classic"
-                  />
-                  <ProductCard
-                    title="Fonte Bebedouro Amicus Aqua Mini Bivolt"
-                    image="https://images.petz.com.br/fotos/1641905625433.jpg"
-                    price={149.90}
-                    installments="até 2x de R$ 74,95"
-                    store="Mercado Livre"
-                    rating={4.2}
-                    reviews={150}
-                    slug="Fonte Bebedouro Aqua"
-                    cashback="3%"
-                  />
+                  {grupos.slice(0, 4).map((grupo) => (
+                    <ProductCard
+                      key={grupo.nomePrincipal}
+                      id={grupo.variacoes[0]?.id}
+                      title={grupo.nomePrincipal}
+                      image={grupo.imagemCapa}
+                      price={grupo.menorPrecoCapa}
+                      slug={`ofertas?q=${encodeURIComponent(grupo.nomePrincipal)}`}
+                      rating={4.8}
+                      reviews={120}
+                      store={grupo.variacoes[0]?.loja}
+                      offerBadge={true}
+                    />
+                  ))}
                 </div>
               </div>
             </section>
@@ -118,7 +88,20 @@ export default async function HomePage({
             />
 
             {/* Quem viu, comprou também */}
-            <ProductCarousel />
+            <ProductCarousel
+              title="Destaques para você"
+              products={grupos.slice(4, 14).map(g => ({
+                id: g.variacoes[0]?.id,
+                title: g.nomePrincipal,
+                image: g.imagemCapa,
+                price: g.menorPrecoCapa,
+                store: g.variacoes[0]?.loja,
+                rating: 4.8,
+                reviews: 120,
+                slug: g.nomePrincipal
+              }))}
+            />
+
           </>
         )}
 
