@@ -195,7 +195,7 @@ async function atualizarPrecoShopee(produtoId: number, resultado: any) {
 /**
  * Função principal de sincronização
  */
-export async function syncShopee(limit?: number) {
+export async function syncShopee(limit?: number, ids?: number[]) {
     console.log('--- INICIANDO SINCRONIZAÇÃO SHOPEE ---')
     console.log(`App ID: ${SHOPEE_APP_ID}`)
 
@@ -204,7 +204,9 @@ export async function syncShopee(limit?: number) {
         .select('id, nome')
         .order('id', { ascending: true });
 
-    if (limit) {
+    if (ids && ids.length > 0) {
+        query = query.in('id', ids);
+    } else if (limit) {
         query = query.limit(limit);
     }
 
@@ -244,6 +246,11 @@ export async function syncShopee(limit?: number) {
 }
 
 if (require.main === module || process.argv[1].endsWith('shopee.ts')) {
-    const limit = process.argv.includes('--limit') ? parseInt(process.argv[process.argv.indexOf('--limit') + 1]) : undefined;
-    syncShopee(limit);
+    const limitIdx = process.argv.indexOf('--limit');
+    const limit = limitIdx !== -1 ? parseInt(process.argv[limitIdx + 1]) : undefined;
+
+    const idsIdx = process.argv.indexOf('--ids');
+    const ids = idsIdx !== -1 ? process.argv[idsIdx + 1].split(',').map(Number) : undefined;
+
+    syncShopee(limit, ids);
 }

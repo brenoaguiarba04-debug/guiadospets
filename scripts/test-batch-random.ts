@@ -1,85 +1,109 @@
 
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import Table from 'cli-table3';
+import { spawn } from 'child_process';
 import chalk from 'chalk';
 
-dotenv.config();
 dotenv.config({ path: '.env.local' });
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+function runScript(command: string, args: string[], name: string, color: any) {
+    console.log(color(`🚀 [${name}] Iniciando...`));
+    const child = spawn(command, args, { stdio: 'inherit', shell: true });
+    return new Promise((resolve) => {
+        child.on('close', (code) => {
+            console.log(color(`🏁 [${name}] Finalizado com código ${code}`));
+            resolve(code);
+        });
+    });
+}
 
 async function runTest() {
-    console.log(chalk.cyan('🚀 Buscando produtos que JÁ POSSUEM PREÇOS cadastrados...'));
+    console.log(chalk.bold.white('🎲 Buscando 10 produtos aleatórios no banco de dados...'));
 
-    // Buscamos apenas produtos que têm pelo menos um preço associado
-    // LIMITANDO a 20 para o teste
-    const { data: precos } = await supabase
-        .from('precos')
-        .select(`
-            preco,
-            loja,
-            link_afiliado,
-            produto_id,
-            produtos (nome)
-        `)
-        .order('ultima_atualizacao', { ascending: false })
-        .limit(60); // Pegamos mais para agrupar
-
-    if (!precos || precos.length === 0) {
-        console.error(chalk.red('❌ Nenhum preço encontrado no banco.'));
+    // 1. Pegar IDs aleatórios usando uma query simples
+    // Como Supabase não tem ORDER BY RANDOM() fácil via JS client sem RPC,
+    // vamos pegar todos os IDs e sortear no JS (considerando que são poucos produtos, ~400)
+    const { data: allIds } = await supabase.from('produtos').select('id');
+    if (!allIds || allIds.length === 0) {
+        console.error('❌ Nenhum produto encontrado no banco.');
         return;
     }
 
-    // Agrupar por produto
-    const produtosMap = new Map();
+    const shuffled = allIds.sort(() => 0.5 - Math.random());
+    const selectedIds = shuffled.slice(0, 10).map(p => p.id);
+    const idsString = selectedIds.join(',');
 
-    precos.forEach((p: any) => {
-        if (!p.produtos) return;
-        const nome = p.produtos.nome;
-        if (!produtosMap.has(nome)) {
-            produtosMap.set(nome, {
-                nome: nome,
-                ml: null,
-                shopee: null,
-                amazon: null
+    console.log(chalk.green(`✅ IDs selecionados: ${idsString}`));
+
+    // 2. Rodar scrapers em paralelo
+    console.log(chalk.bold.cyan('\n⚡ Iniciando scrapers concorrentes para os 10 produtos...\n'));
+
+    const promises = [
+        runScript('npx', ['tsx', 'scraper/amazon_scraper.ts', '--batch', '--ids', idsString], 'AMAZON', chalk.cyan),
+        runScript('npx', ['tsx', 'scraper/mercado-livre.ts', '--ids', idsString], 'ML', chalk.yellow),
+        runScript('npx', ['tsx', 'scraper/shopee.ts', '--ids', idsString], 'SHOPEE', chalk.rgb(255, 100, 0))
+    ];
+
+    await Promise.all(promises);
+
+    console.log(chalk.bold.green('\n✅ Todos os scrapers finalizaram! Gerando relatório final...\n'));
+
+    // 3. Gerar Tabela Final
+    await generateFinalReport(selectedIds);
+}
+
+async function generateFinalReport(ids: number[]) {
+    const { data: produtos } = await supabase
+        .from('produtos')
+        .select('id, nome')
+        .in('id', ids);
+
+    if (!produtos) return;
+
+    let md = '\n# 📊 Relatório de Teste: Preços e Links de Afiliado (10 Randômicos)\n\n';
+    md += '| Produto | Amazon | Shopee | Mercado Livre | Melhor |\n';
+    md += '| :--- | :--- | :--- | :--- | :--- |\n';
+
+    for (const p of produtos) {
+        const { data: precos } = await supabase
+            .from('precos')
+            .select('loja, preco, link_afiliado')
+            .eq('produto_id', p.id)
+            .in('loja', ['Amazon', 'Shopee', 'Mercado Livre']);
+
+        let amazon = '---';
+        let shopee = '---';
+        let ml = '---';
+        let minPreco = Infinity;
+        let melhorLoja = '';
+
+        if (precos) {
+            precos.forEach(pr => {
+                const priceFormatted = `[R$ ${pr.preco.toFixed(2)}](${pr.link_afiliado})`;
+                if (pr.loja === 'Amazon') {
+                    amazon = priceFormatted;
+                    if (pr.preco < minPreco) { minPreco = pr.preco; melhorLoja = 'Amazon'; }
+                }
+                if (pr.loja === 'Shopee') {
+                    shopee = priceFormatted;
+                    if (pr.preco < minPreco) { minPreco = pr.preco; melhorLoja = 'Shopee'; }
+                }
+                if (pr.loja === 'Mercado Livre') {
+                    ml = priceFormatted;
+                    if (pr.preco < minPreco) { minPreco = pr.preco; melhorLoja = 'Mercado Livre'; }
+                }
             });
         }
-        const item = produtosMap.get(nome);
-        if (p.loja === 'Mercado Livre') item.ml = { preco: p.preco, link: p.link_afiliado };
-        if (p.loja === 'Shopee') item.shopee = { preco: p.preco, link: p.link_afiliado };
-        if (p.loja === 'Amazon') item.amazon = { preco: p.preco, link: p.link_afiliado };
-    });
 
-    const produtos = Array.from(produtosMap.values()).slice(0, 20);
+        md += `| ${p.nome.substring(0, 50)} | ${amazon} | ${shopee} | ${ml} | **${melhorLoja || '---'}** |\n`;
+    }
 
-    const table = new Table({
-        head: [
-            chalk.blue('Produto'),
-            chalk.yellow('ML'),
-            chalk.yellow('Shopee'),
-            chalk.yellow('Amazon')
-        ],
-        colWidths: [40, 25, 25, 25]
-    });
-
-    produtos.forEach(p => {
-        const format = (store: any) => {
-            if (!store) return chalk.red('N/A');
-            return `${chalk.green('R$ ' + store.preco.toFixed(2))}\n${chalk.gray(store.link.slice(0, 20))}...`;
-        };
-
-        table.push([
-            p.nome.slice(0, 38),
-            format(p.ml),
-            format(p.shopee),
-            format(p.amazon)
-        ]);
-    });
-
-    console.log(table.toString());
+    console.log(md);
 }
 
 runTest();

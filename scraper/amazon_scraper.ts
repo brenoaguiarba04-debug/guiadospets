@@ -350,10 +350,15 @@ if (isBatch) {
         dotenv.config({ path: '.env.local' });
         const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
 
-        console.log(`🚀 Iniciando Batch Amazon Scraper (Limit: ${limit || 'Todos'})...`);
+        const idsIdx = args.indexOf('--ids');
+        const ids = idsIdx !== -1 ? args[idsIdx + 1].split(',').map(Number) : undefined;
+
+        console.log(`🚀 Iniciando Batch Amazon Scraper (Limit: ${limit || 'Todos'}, IDs: ${ids || 'Nenhum'})...`);
         let query = supabase.from('produtos').select('*').order('id', { ascending: true });
 
-        if (limit) {
+        if (ids && ids.length > 0) {
+            query = query.in('id', ids);
+        } else if (limit) {
             query = query.limit(limit);
         }
 
@@ -379,9 +384,15 @@ if (isBatch) {
         try {
             for (const p of products) {
                 console.log(`🔄 Processando produto ID ${p.id}: ${p.nome}`);
-                await scrapeAmazon(p.nome, p.id, supabase, browser);
+                try {
+                    await scrapeAmazon(p.nome, p.id, supabase, browser);
+                } catch (itemError) {
+                    console.error(`❌ Erro crítico no produto ${p.id}:`, itemError);
+                    // Tenta continuar para o próximo produto
+                }
             }
         } finally {
+
 
             await browser.close();
         }

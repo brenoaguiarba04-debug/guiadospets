@@ -1,30 +1,32 @@
+
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+dotenv.config({ path: '.env.local' });
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function count() {
-    const { count: precoCount, error: precoError } = await supabase
+async function checkProgress() {
+    const ids = [112, 12, 178, 238, 221, 230, 169, 133, 41, 195];
+
+    const { data: precos } = await supabase
         .from('precos')
-        .select('*', { count: 'exact', head: true });
+        .select('produto_id, loja, ultima_atualizacao')
+        .in('produto_id', ids);
 
-    const { count: produtoCount, error: produtoError } = await supabase
-        .from('produtos')
-        .select('*', { count: 'exact', head: true });
+    console.log('--- PROGRESSO NO BANCO ---');
+    console.log(`Preços encontrados: ${precos?.length || 0}`);
 
-    if (precoError || produtoError) {
-        console.error('Error fetching count:', precoError || produtoError);
-        return;
-    }
+    const stats: any = {};
+    precos?.forEach(p => {
+        if (!stats[p.produto_id]) stats[p.produto_id] = [];
+        stats[p.produto_id].push(p.loja);
+    });
 
-    console.log(`Total produtos: ${produtoCount}`);
-    console.log(`Total prices: ${precoCount}`);
+    console.log(JSON.stringify(stats, null, 2));
 }
 
-count();
+checkProgress();
