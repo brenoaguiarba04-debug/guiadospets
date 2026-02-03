@@ -164,7 +164,7 @@ function agruparProdutos(produtos: any[]) {
         const grupoAtual = grupos[nomeGrupo]
 
         if (!grupoAtual.labelsUsados.has(textoBotao)) {
-            const lojasConfiaveis = ['Petz', 'Amazon', 'Petlove', 'Cobasi', 'Magalu']
+            const lojasConfiaveis = ['Amazon', 'Magalu']
             const imagemAtualEhConfiavel = lojasConfiaveis.some(l => grupoAtual.lojaCapa?.includes(l))
             const novaImagemEhConfiavel = lojasConfiaveis.some(l => loja.includes(l))
 

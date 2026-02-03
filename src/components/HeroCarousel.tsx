@@ -21,7 +21,7 @@ export default function HeroCarousel() {
                     </span> para seu pet
                 </>
             ),
-            subtitle: "Compare preços de rações e medicamentos em Petz, Cobasi, Petlove e mais.",
+            subtitle: "Compare preços de rações e medicamentos em Amazon, Shopee e Mercado Livre.",
             image: "/—Pngtree—dog and cat white backgroud_13489516.png",
             badge: "🔥 Compare e Economize",
             btnText: "Comparar Preços",

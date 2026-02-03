@@ -116,7 +116,7 @@ function agruparProdutos(produtos: any[]) {
         // Evita duplicatas
         if (!grupoAtual.labelsUsados.has(textoBotao)) {
             // Lógica de Melhor Imagem
-            const lojasConfiaveis = ['Petz', 'Amazon', 'Petlove', 'Cobasi', 'Magalu']
+            const lojasConfiaveis = ['Amazon', 'Magalu']
             const imagemAtualEhConfiavel = lojasConfiaveis.some(l => grupoAtual.lojaCapa?.includes(l))
             const novaImagemEhConfiavel = lojasConfiaveis.some(l => loja.includes(l))
 

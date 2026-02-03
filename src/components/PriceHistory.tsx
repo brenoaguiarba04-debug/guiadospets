@@ -32,7 +32,7 @@ function generateMockHistory(precoAtual: number): PricePoint[] {
             history.push({
                 date: date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }),
                 price: Math.round(preco * 100) / 100,
-                loja: ['Petz', 'Petlove', 'Amazon', 'Cobasi'][Math.floor(Math.random() * 4)]
+                loja: ['Amazon', 'Shopee', 'Mercado Livre'][Math.floor(Math.random() * 3)]
             })
         }
     }

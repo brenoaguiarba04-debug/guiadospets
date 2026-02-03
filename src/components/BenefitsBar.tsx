@@ -18,7 +18,7 @@ export default function BenefitsBar() {
         {
             icon: <CreditCard size={24} className="text-purple-600" />,
             title: "Melhores Ofertas",
-            subtitle: "Petz, Cobasi, Petlove..."
+            subtitle: "Amazon, Shopee, ML..."
         },
         {
             icon: <ShieldCheck size={24} className="text-purple-600" />,

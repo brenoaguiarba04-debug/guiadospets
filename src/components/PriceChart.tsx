@@ -38,9 +38,7 @@ interface PriceChartProps {
 const CORES_LOJAS: Record<string, { bg: string; border: string }> = {
     'Shopee': { bg: 'rgba(255, 87, 34, 0.1)', border: 'rgb(255, 87, 34)' },
     'Amazon': { bg: 'rgba(255, 153, 0, 0.1)', border: 'rgb(255, 153, 0)' },
-    'Petz': { bg: 'rgba(76, 175, 80, 0.1)', border: 'rgb(76, 175, 80)' },
-    'Cobasi': { bg: 'rgba(33, 150, 243, 0.1)', border: 'rgb(33, 150, 243)' },
-    'Petlove': { bg: 'rgba(156, 39, 176, 0.1)', border: 'rgb(156, 39, 176)' },
+    'Mercado Livre': { bg: 'rgba(255, 230, 0, 0.1)', border: 'rgb(255, 193, 7)' },
 }
 
 export default function PriceChart({ historico, lojas }: PriceChartProps) {

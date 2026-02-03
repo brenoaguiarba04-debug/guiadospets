@@ -381,9 +381,6 @@ export function formatarPreco(valor: number): string {
  */
 export function getStoreBadge(loja: string): { emoji: string; className: string } {
     const stores: Record<string, { emoji: string; className: string }> = {
-        'Petz': { emoji: '🐾', className: 'bg-blue-100 text-blue-700' },
-        'Petlove': { emoji: '💜', className: 'bg-purple-100 text-purple-700' },
-        'Cobasi': { emoji: '🏪', className: 'bg-green-100 text-green-700' },
         'Amazon': { emoji: '📦', className: 'bg-orange-100 text-orange-700' },
         'Manual': { emoji: '📦', className: 'bg-orange-100 text-orange-700' },
         'Shopee': { emoji: '🧡', className: 'bg-orange-100 text-orange-600' },
@@ -489,7 +486,7 @@ export function agruparProdutos(produtos: any[]) {
         if (!grupoAtual.labelsUsados.has(textoBotao)) {
 
             // Lógica de Melhor Imagem (Prioriza Lojas Confiáveis)
-            const lojasConfiaveis = ['Petz', 'Amazon', 'Petlove', 'Cobasi', 'Magalu']
+            const lojasConfiaveis = ['Amazon', 'Magalu']
             const imagemAtualEhConfiavel = lojasConfiaveis.some(l => grupoAtual.lojaCapa?.includes(l))
             const novaImagemEhConfiavel = lojasConfiaveis.some(l => loja.includes(l))
 
@@ -534,7 +531,7 @@ export function agruparProdutos(produtos: any[]) {
     }
 
     // Normalização de Imagens: Se o grupo tem uma capa "Confiável", aplica ela nas variações "Não Confiáveis"
-    const lojasConfiaveis = ['Petz', 'Amazon', 'Petlove', 'Cobasi', 'Magalu']
+    const lojasConfiaveis = ['Amazon', 'Magalu']
 
     for (const g of Object.values(grupos)) {
         // Ordena por preço
@@ -546,7 +543,7 @@ export function agruparProdutos(produtos: any[]) {
         if (capaEhConfiavel) {
             g.variacoes.forEach(v => {
                 const varEhConfiavel = lojasConfiaveis.some(l => (v.loja || '').toLowerCase().includes(l.toLowerCase()))
-                // Se a variação não é confiável (ex: Shopee), usa a capa confiável (Petz/Amazon)
+                // Se a variação não é confiável (ex: Shopee), usa a capa confiável (Amazon)
                 if (!varEhConfiavel) {
                     v.imagem = g.imagemCapa
                 }

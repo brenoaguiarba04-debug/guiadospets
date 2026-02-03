@@ -17,36 +17,6 @@ interface Cupom {
 
 const CUPONS: Cupom[] = [
     {
-        loja: 'Petz',
-        codigo: 'GUIADOPET10',
-        desconto: '10% OFF',
-        descricao: 'Desconto em toda a loja para primeira compra',
-        validade: 'Válido até 31/03/2026',
-        emoji: '🐾',
-        cor: 'from-blue-500 to-blue-600',
-        link: 'https://www.petz.com.br'
-    },
-    {
-        loja: 'Petlove',
-        codigo: 'PRIMEIRACOMPRA',
-        desconto: '15% OFF',
-        descricao: 'Para novos clientes em compras acima de R$150',
-        validade: 'Válido até 28/02/2026',
-        emoji: '💜',
-        cor: 'from-purple-500 to-purple-600',
-        link: 'https://www.petlove.com.br'
-    },
-    {
-        loja: 'Cobasi',
-        codigo: 'BEMVINDO',
-        desconto: 'R$30 OFF',
-        descricao: 'Desconto fixo em compras acima de R$200',
-        validade: 'Válido até 31/03/2026',
-        emoji: '🏪',
-        cor: 'from-green-500 to-green-600',
-        link: 'https://www.cobasi.com.br'
-    },
-    {
         loja: 'Amazon',
         codigo: 'Sem código',
         desconto: 'Até 40% OFF',
@@ -65,6 +35,16 @@ const CUPONS: Cupom[] = [
         emoji: '🧡',
         cor: 'from-orange-400 to-red-500',
         link: 'https://shopee.com.br'
+    },
+    {
+        loja: 'Mercado Livre',
+        codigo: 'Sem código',
+        desconto: 'Até 30% OFF',
+        descricao: 'Melhores ofertas em produtos pet com frete grátis',
+        validade: 'Ofertas diárias',
+        emoji: '🛒',
+        cor: 'from-yellow-500 to-yellow-600',
+        link: 'https://www.mercadolivre.com.br/ofertas/pet-shop'
     },
 ]
 
@@ -108,8 +88,8 @@ function CupomCard({ cupom }: { cupom: Cupom }) {
                         <button
                             onClick={handleCopy}
                             className={`px-4 py-3 rounded-lg font-bold transition-colors ${copied
-                                    ? 'bg-green-500 text-white'
-                                    : 'bg-purple-600 text-white hover:bg-purple-700'
+                                ? 'bg-green-500 text-white'
+                                : 'bg-purple-600 text-white hover:bg-purple-700'
                                 }`}
                         >
                             {copied ? '✓ Copiado!' : '📋 Copiar'}

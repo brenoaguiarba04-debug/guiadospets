@@ -35,7 +35,7 @@ export default async function MinimalHome({
                             O que você procura?
                         </h1>
                         <p className="text-gray-500 max-w-md mx-auto">
-                            Busque preços em Petz, Cobasi, Amazon e Mercado Livre instantaneamente.
+                            Busque preços em Amazon, Shopee e Mercado Livre instantaneamente.
                         </p>
                         {/* Visual Quick Links */}
                         <div className="flex justify-center gap-4 mt-8 flex-wrap">

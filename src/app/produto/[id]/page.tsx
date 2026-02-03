@@ -149,11 +149,13 @@ export default async function ProdutoPage({ params }: PageProps) {
     const variacoes = grupoAtual?.variacoes || []
 
     // Deduplicar ofertas por loja (mantém a mais RECENTE para garantir que o preço seja o atual)
+    // Normaliza o nome da loja para evitar duplicatas como "amazon" vs "Amazon"
     const uniqueOffers = Object.values(
         precos.reduce((acc, current) => {
-            const existing = acc[current.loja]
+            const lojaKey = current.loja.toLowerCase().trim()
+            const existing = acc[lojaKey]
             if (!existing || (new Date(current.ultima_atualizacao || 0) > new Date(existing.ultima_atualizacao || 0))) {
-                acc[current.loja] = current
+                acc[lojaKey] = current
             }
             return acc
         }, {} as Record<string, typeof precos[0]>)
@@ -238,75 +240,77 @@ export default async function ProdutoPage({ params }: PageProps) {
                         <div className="p-6 flex-1">
                             {uniqueOffers.length > 0 ? (
                                 <div className="space-y-4">
-                                    {uniqueOffers.map((oferta, index) => {
-                                        const isWinner = index === 0
-                                        const storeBadge = getStoreBadge(oferta.loja)
-                                        const dataAtualizacao = oferta.ultima_atualizacao
-                                            ? new Date(oferta.ultima_atualizacao).toLocaleDateString('pt-BR')
-                                            : 'N/A'
+                                    {uniqueOffers
+                                        .filter(oferta => !['Petz', 'Cobasi', 'Petlove'].includes(oferta.loja))
+                                        .map((oferta, index) => {
+                                            const isWinner = index === 0
+                                            const storeBadge = getStoreBadge(oferta.loja)
+                                            const dataAtualizacao = oferta.ultima_atualizacao
+                                                ? new Date(oferta.ultima_atualizacao).toLocaleDateString('pt-BR')
+                                                : 'N/A'
 
-                                        const linkValido = oferta.link_afiliado && oferta.link_afiliado.length > 5 && oferta.link_afiliado !== '#'
+                                            const linkValido = oferta.link_afiliado && oferta.link_afiliado.length > 5 && oferta.link_afiliado !== '#'
 
-                                        const linkAfiliado = linkValido && oferta.link_afiliado
-                                            ? (oferta.link_afiliado.startsWith('http') ? oferta.link_afiliado : `https://${oferta.link_afiliado}`)
-                                            : '#'
+                                            const linkAfiliado = linkValido && oferta.link_afiliado
+                                                ? (oferta.link_afiliado.startsWith('http') ? oferta.link_afiliado : `https://${oferta.link_afiliado}`)
+                                                : '#'
 
-                                        return (
-                                            <div
-                                                key={oferta.id}
-                                                className={`relative p-4 rounded-xl border-2 transition-all hover:shadow-md ${isWinner
-                                                    ? 'border-green-500 bg-green-50'
-                                                    : 'border-gray-200 bg-white hover:-translate-y-0.5'
-                                                    }`}
-                                            >
-                                                {isWinner && (
-                                                    <div className="absolute -top-2.5 left-4 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
-                                                        🏆 Melhor Preço
-                                                    </div>
-                                                )}
-
-                                                <div className="flex items-center justify-between flex-wrap gap-4">
-                                                    <div className="space-y-1">
-                                                        <div className="flex items-center gap-2 text-lg font-bold text-gray-800">
-                                                            <span>{storeBadge.emoji}</span>
-                                                            <span>{oferta.loja === 'Manual' ? 'Amazon' : oferta.loja}</span>
+                                            return (
+                                                <div
+                                                    key={oferta.id}
+                                                    className={`relative p-4 rounded-xl border-2 transition-all hover:shadow-md ${isWinner
+                                                        ? 'border-green-500 bg-green-50'
+                                                        : 'border-gray-200 bg-white hover:-translate-y-0.5'
+                                                        }`}
+                                                >
+                                                    {isWinner && (
+                                                        <div className="absolute -top-2.5 left-4 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full uppercase tracking-wide">
+                                                            🏆 Melhor Preço
                                                         </div>
-                                                        <div className="text-xs text-gray-500">
-                                                            Atualizado: {dataAtualizacao}
-                                                        </div>
-                                                    </div>
+                                                    )}
 
-                                                    <div className="flex items-center gap-4">
-                                                        <div className={`text-2xl font-extrabold ${isWinner ? 'text-green-600' : 'text-gray-800'}`}>
-                                                            R$ {oferta.preco.toFixed(2).replace('.', ',')}
+                                                    <div className="flex items-center justify-between flex-wrap gap-4">
+                                                        <div className="space-y-1">
+                                                            <div className="flex items-center gap-2 text-lg font-bold text-gray-800">
+                                                                <span>{storeBadge.emoji}</span>
+                                                                <span>{oferta.loja === 'Manual' ? 'Amazon' : oferta.loja}</span>
+                                                            </div>
+                                                            <div className="text-xs text-gray-500">
+                                                                Atualizado: {dataAtualizacao}
+                                                            </div>
                                                         </div>
 
-                                                        {linkValido ? (
-                                                            <a
-                                                                href={linkAfiliado}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className={`px-6 py-3 rounded-full font-bold text-base transition-all ${isWinner
-                                                                    ? 'bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-200 animate-pulse'
-                                                                    : 'border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
-                                                                    }`}
-                                                            >
-                                                                🛒 Comprar Agora
-                                                            </a>
-                                                        ) : (
-                                                            <button
-                                                                disabled
-                                                                className="px-6 py-3 rounded-full font-bold text-base bg-gray-200 text-gray-400 cursor-not-allowed"
-                                                                title="Link indisponível no momento"
-                                                            >
-                                                                Indisponível
-                                                            </button>
-                                                        )}
+                                                        <div className="flex items-center gap-4">
+                                                            <div className={`text-2xl font-extrabold ${isWinner ? 'text-green-600' : 'text-gray-800'}`}>
+                                                                R$ {oferta.preco.toFixed(2).replace('.', ',')}
+                                                            </div>
+
+                                                            {linkValido ? (
+                                                                <a
+                                                                    href={linkAfiliado}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className={`px-6 py-3 rounded-full font-bold text-base transition-all ${isWinner
+                                                                        ? 'bg-green-500 text-white hover:bg-green-600 shadow-lg shadow-green-200 animate-pulse'
+                                                                        : 'border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white'
+                                                                        }`}
+                                                                >
+                                                                    🛒 Comprar Agora
+                                                                </a>
+                                                            ) : (
+                                                                <button
+                                                                    disabled
+                                                                    className="px-6 py-3 rounded-full font-bold text-base bg-gray-200 text-gray-400 cursor-not-allowed"
+                                                                    title="Link indisponível no momento"
+                                                                >
+                                                                    Indisponível
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        )
-                                    })}
+                                            )
+                                        })}
                                 </div>
                             ) : (
                                 <div className="text-center py-12 bg-white rounded-xl border-2 border-dashed border-gray-200">

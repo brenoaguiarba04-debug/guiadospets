@@ -40,15 +40,15 @@ export default async function HomePage({
 
         {!searchTerm && (
           <>
-            {/* Hero Banner - Petlove Style */}
-            {/* Hero Carousel - Petlove Style */}
+            {/* Hero Banner */}
+            {/* Hero Carousel */}
             <div className="py-6">
               <HeroCarousel />
             </div>
 
             <BenefitsBar />
 
-            {/* Petlove Style Categories */}
+            {/* Categories */}
             <PetloveCategories />
 
             {/* Daily Offers - Product Cards */}
